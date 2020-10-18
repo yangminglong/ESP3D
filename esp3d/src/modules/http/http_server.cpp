@@ -26,7 +26,7 @@
 #include <WebServer.h>
 #define ESP3DHTTP_RUNNING_PRIORITY 1
 #define ESP3DHTTP_RUNNING_CORE 1
- 
+
 #endif //ARDUINO_ARCH_ESP32
 #if defined (ARDUINO_ARCH_ESP8266)
 #include <ESP8266WebServer.h>
@@ -222,7 +222,7 @@ bool HTTP_Server::begin()
     AuthenticationService::begin(_webserver);
 #endif //AUTHENTICATION_FEATURE
 #ifdef HTTP_INDEPENDANT_TASK
-xTaskCreatePinnedToCore(
+    xTaskCreatePinnedToCore(
         ESP3DHTTPTaskfn, /* Task function. */
         "ESP3DHTTP Task", /* name of task. */
         8096, /* Stack size of task */

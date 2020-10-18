@@ -22,6 +22,15 @@
 
 #ifndef _CAMERA_H
 #define _CAMERA_H
+//class WebSocketsServer;
+#if defined (ARDUINO_ARCH_ESP32)
+class WebServer;
+#define STREAMSERVER WebServer
+#endif //ARDUINO_ARCH_ESP32
+#if defined (ARDUINO_ARCH_ESP8266)
+#include <ESP8266WebServer.h>
+#define STREAMSERVER ESP8266WebServer
+#endif //ARDUINO_ARCH_ESP8266
 
 class Camera
 {
@@ -34,6 +43,7 @@ public:
     bool stopHardware();
     bool startStreamServer();
     bool stopStreamServer();
+    static void handle_stream();
     void handle();
     int command(const char * param, const char * value);
     uint8_t GetModel();
@@ -54,15 +64,20 @@ public:
     {
         return _connected;
     }
+    bool isinitialised()
+    {
+        return _initialised;
+    }
     uint16_t port()
     {
         return _port;
     }
 private:
     static bool _initialised;
+    static STREAMSERVER * _streamserver;
     bool _server_started;
     bool _started;
-    bool _connected;
+    static bool _connected;
     uint16_t _port;
 };
 
