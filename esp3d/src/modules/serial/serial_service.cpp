@@ -102,7 +102,7 @@ bool SerialService::begin()
             xTaskCreatePinnedToCore(
                 ESP3DSerialTaskfn, /* Task function. */
                 "ESP3D Serial Task", /* name of task. */
-                8096, /* Stack size of task */
+                8192, /* Stack size of task */
                 NULL, /* parameter of the task */
                 ESP3DSERIAL_RUNNING_PRIORITY, /* priority of the task */
                 &_hserialtask, /* Task handle to keep track of created task */

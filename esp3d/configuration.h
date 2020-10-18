@@ -210,6 +210,10 @@
 //#define CAMERA_DEVICE_FLIP_HORIZONTALY//comment to disable
 #define CUSTOM_CAMERA_NAME "ESP32-CAM"
 
+#ifdef CAMERA_DEVICE
+#define HTTP_INDEPENDANT_TASK
+#endif //CAMERA_DEVICE 
+
 ////////////////////////////////////////////////
 //Warning until fix is found
 #if defined(CAMERA_DEVICE) && defined(FTP_FEATURE)

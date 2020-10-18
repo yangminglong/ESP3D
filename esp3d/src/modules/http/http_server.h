@@ -48,6 +48,7 @@ public:
     static bool begin();
     static void end();
     static void handle();
+    static void handleProcess();
     static bool started()
     {
         return _started;

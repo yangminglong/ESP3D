@@ -24,6 +24,9 @@
 #if defined (HTTP_FEATURE)
 #if defined (ARDUINO_ARCH_ESP32)
 #include <WebServer.h>
+#define ESP3DHTTP_RUNNING_PRIORITY 1
+#define ESP3DHTTP_RUNNING_CORE 1
+ 
 #endif //ARDUINO_ARCH_ESP32
 #if defined (ARDUINO_ARCH_ESP8266)
 #include <ESP8266WebServer.h>
@@ -35,7 +38,6 @@
 #include "../websocket/websocket_server.h"
 #if defined(SD_DEVICE)
 #include "../filesystem/esp_sd.h"
-
 #endif //SD_DEVICE
 bool HTTP_Server::_started = false;
 uint16_t HTTP_Server::_port = 0;
@@ -180,6 +182,18 @@ void HTTP_Server::cancelUpload()
     Hal::wait(100);
 }
 
+#ifdef HTTP_INDEPENDANT_TASK
+void ESP3DHTTPTaskfn( void * parameter )
+{
+    Hal::wait(100);  // Yield to other tasks
+    for(;;) {
+        HTTP_Server::handleProcess();
+        Hal::wait(0);  // Yield to other tasks
+    }
+    vTaskDelete( NULL );
+}
+#endif //HTTP_INDEPENDANT_TASK
+
 
 bool HTTP_Server::begin()
 {
@@ -207,7 +221,17 @@ bool HTTP_Server::begin()
 #ifdef AUTHENTICATION_FEATURE
     AuthenticationService::begin(_webserver);
 #endif //AUTHENTICATION_FEATURE
-
+#ifdef HTTP_INDEPENDANT_TASK
+xTaskCreatePinnedToCore(
+        ESP3DHTTPTaskfn, /* Task function. */
+        "ESP3DHTTP Task", /* name of task. */
+        8096, /* Stack size of task */
+        NULL, /* parameter of the task */
+        ESP3DHTTP_RUNNING_PRIORITY, /* priority of the task */
+        NULL, /* Task handle to keep track of created task */
+        ESP3DHTTP_RUNNING_CORE    /* Core to run the task */
+    );
+#endif //HTTP_INDEPENDANT_TASK
     _started = no_error;
     return no_error;
 }
@@ -226,13 +250,20 @@ void HTTP_Server::end()
     }
 }
 
-void HTTP_Server::handle()
+void HTTP_Server::handleProcess()
 {
     if (_started) {
         if (_webserver) {
             _webserver->handleClient();
         }
     }
+}
+
+void HTTP_Server::handle()
+{
+#ifndef HTTP_INDEPENDANT_TASK
+    HTTP_Server::handleProcess();
+#endif //HTTP_INDEPENDANT_TASK
 }
 
 const char * HTTP_Server::get_Splited_Value(String data, char separator, int index)
