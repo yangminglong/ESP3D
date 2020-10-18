@@ -214,13 +214,6 @@
 #define HTTP_INDEPENDANT_TASK
 #endif //CAMERA_DEVICE 
 
-////////////////////////////////////////////////
-//Warning until fix is found
-#if defined(CAMERA_DEVICE) && defined(FTP_FEATURE)
-#warning currently Camera and FTP server do not work together, disabling FTP SERVER
-#undef FTP_FEATURE
-#endif
-
 //Allow remote access by enabling cross origin access
 //check https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 //this should be enabled only in specific cases
