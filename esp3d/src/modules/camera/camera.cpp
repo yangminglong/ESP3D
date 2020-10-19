@@ -48,6 +48,7 @@ bool Camera::_initialised = false;
 bool Camera::_connected = false;
 Camera esp3d_camera;
 STREAMSERVER * Camera::_streamserver = nullptr;
+
 void Camera::handle_stream()
 {
     log_esp3d("Camera stream reached");
@@ -161,6 +162,106 @@ void Camera::handle_stream()
     _streamserver->sendContent("");
 }
 
+void Camera::handle_snap()
+{
+    log_esp3d("Camera stream reached");
+    if (!_initialised) {
+        log_esp3d("Camera not started");
+        _streamserver->send (500, "text/plain", "Camera not started");
+        return;
+    }
+    sensor_t * s = esp_camera_sensor_get();
+    if (_streamserver->hasArg ("framesize") ) {
+        if(s->status.framesize != _streamserver->arg ("framesize").toInt()) {
+            command("framesize", _streamserver->arg ("framesize").c_str());
+        }
+    }
+    if (_streamserver->hasArg ("hmirror") ) {
+        command("hmirror", _streamserver->arg ("hmirror").c_str());
+    }
+    if (_streamserver->hasArg ("vflip") ) {
+        command("vflip", _streamserver->arg ("vflip").c_str());
+    }
+    if (_streamserver->hasArg ("wb_mode") ) {
+        command("wb_mode", _streamserver->arg ("wb_mode").c_str());
+    }
+    _connected = true;
+#ifdef ESP_ACCESS_CONTROL_ALLOW_ORIGIN
+    _streamserver->enableCrossOrigin(true);
+#endif //ESP_ACCESS_CONTROL_ALLOw_ORIGIN
+    camera_fb_t * fb = NULL;
+    bool res_error = false;
+    size_t _jpg_buf_len = 0;
+    uint8_t * _jpg_buf = NULL;
+    char * part_buf[PART_BUFFER_SIZE];
+    dl_matrix3du_t *image_matrix = NULL;
+    _streamserver->sendHeader(String(F("Content-Type")), String(F("image/jpeg")),true);
+    _streamserver->sendHeader(String(F("Content-Disposition")), String(F("inline; filename=capture.jpg")),true);
+    _streamserver->setContentLength(CONTENT_LENGTH_UNKNOWN);
+    _streamserver->send(200);
+    log_esp3d("Camera capture ongoing");
+    fb = esp_camera_fb_get();
+    if (!fb) {
+        log_esp3d("Camera capture failed");
+        _streamserver->send (500, "text/plain", "Capture failed");
+    } else {
+        if(fb->width > MIN_WIDTH_COMPRESSION) {
+            if(fb->format != PIXFORMAT_JPEG) {
+                bool jpeg_converted = frame2jpg(fb, JPEG_COMPRESSION, &_jpg_buf, &_jpg_buf_len);
+                esp_camera_fb_return(fb);
+                fb = NULL;
+                if(!jpeg_converted) {
+                    log_esp3d("JPEG compression failed");
+                    res_error = true;
+                }
+            } else {
+                _jpg_buf_len = fb->len;
+                _jpg_buf = fb->buf;
+            }
+        } else {
+            image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
+
+            if (!image_matrix) {
+                log_esp3d("dl_matrix3du_alloc failed");
+                res_error = true;
+            } else {
+                if(!fmt2rgb888(fb->buf, fb->len, fb->format, image_matrix->item)) {
+                    log_esp3d("fmt2rgb888 failed");
+                    res_error = true;
+                } else {
+                    if (fb->format != PIXFORMAT_JPEG) {
+                        if(!fmt2jpg(image_matrix->item, fb->width*fb->height*3, fb->width, fb->height, PIXFORMAT_RGB888, 90, &_jpg_buf, &_jpg_buf_len)) {
+                            log_esp3d("fmt2jpg failed");
+                            res_error = true;
+                        }
+                        esp_camera_fb_return(fb);
+                        fb = NULL;
+                    } else {
+                        _jpg_buf = fb->buf;
+                        _jpg_buf_len = fb->len;
+                    }
+                }
+                dl_matrix3du_free(image_matrix);
+            }
+        }
+    }
+    if (!res_error) {
+        _streamserver->sendContent_P ((const char *)_jpg_buf, _jpg_buf_len);
+    }
+
+    if(fb) {
+        esp_camera_fb_return(fb);
+        fb = NULL;
+        _jpg_buf = NULL;
+    } else if(_jpg_buf) {
+        free(_jpg_buf);
+        _jpg_buf = NULL;
+    }
+    _connected = false;
+    _streamserver->sendContent("");
+}
+
+
 void ESP3DStreamTaskfn( void * parameter )
 {
     Hal::wait(100);  // Yield to other tasks
@@ -186,6 +287,7 @@ Camera::~Camera()
 
 int Camera::command(const char * param, const char * value)
 {
+    log_esp3d("Camera: %s=%s\n",param, value);
     int res = 0;
     int val = atoi(value);
     sensor_t * s = esp_camera_sensor_get();
@@ -346,7 +448,8 @@ bool Camera::startStreamServer()
             output.printERROR("Starting camera server failed");
             return false;
         }
-        _streamserver->on("/",HTTP_ANY, handle_stream);
+        _streamserver->on("/snap",HTTP_ANY, handle_snap);
+        _streamserver->on("/",HTTP_ANY, handle_snap);
         _streamserver->on("/stream",HTTP_ANY, handle_stream);
         _streamserver->begin();
         String stmp = "Camera server started port " + String(_port);

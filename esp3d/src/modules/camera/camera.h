@@ -44,8 +44,9 @@ public:
     bool startStreamServer();
     bool stopStreamServer();
     static void handle_stream();
+    static void handle_snap();
     void handle();
-    int command(const char * param, const char * value);
+    static int command(const char * param, const char * value);
     uint8_t GetModel();
     const char *GetModelString();
     bool started()
