@@ -45,6 +45,7 @@ public:
     bool stopStreamServer();
     static void handle_stream();
     static void handle_snap();
+    void process();
     void handle();
     static int command(const char * param, const char * value);
     uint8_t GetModel();

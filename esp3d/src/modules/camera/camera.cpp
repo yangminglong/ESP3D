@@ -24,6 +24,7 @@
 #include "../../core/settings_esp3d.h"
 #include "../network/netservices.h"
 #include "../../core/esp3doutput.h"
+#include "../../core/esp3d.h"
 #include "../network/netconfig.h"
 #include <WebServer.h>
 #include <esp_camera.h>
@@ -37,17 +38,23 @@
 #define JPEG_COMPRESSION 80
 #define MIN_WIDTH_COMPRESSION 400
 #define PART_BOUNDARY "123456789000000000000987654321"
-#define ESP3DSTREAM_RUNNING_PRIORITY 0
+#define ESP3DSTREAM_RUNNING_PRIORITY 1
 #define ESP3DSTREAM_RUNNING_CORE 0
+#define CAMERA_YIELD    10
 
 #define _STREAM_CONTENT_TYPE  "multipart/x-mixed-replace;boundary=" PART_BOUNDARY
 #define _STREAM_BOUNDARY  "\r\n--" PART_BOUNDARY "\r\n"
 #define _STREAM_PART  "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n"
 
+extern Esp3D myesp3d;
+
 bool Camera::_initialised = false;
 bool Camera::_connected = false;
 Camera esp3d_camera;
 STREAMSERVER * Camera::_streamserver = nullptr;
+#ifdef CAMERA_INDEPENDANT_TASK
+TaskHandle_t _hcameratask= nullptr;
+#endif //CAMERA_INDEPENDANT_TASK
 
 void Camera::handle_stream()
 {
@@ -139,7 +146,16 @@ void Camera::handle_stream()
             _streamserver->sendContent_P ((const char *)part_buf, hlen);
         }
         if(!res_error) {
-            _streamserver->sendContent_P ((const char *)_jpg_buf, _jpg_buf_len);
+            size_t processed = 0;
+            size_t packetSize = 2000;
+            uint8_t * currentbuf = _jpg_buf;
+            while (processed < _jpg_buf_len) {
+                _streamserver->sendContent_P ((const char *)&currentbuf[processed], packetSize);
+                processed+=packetSize;
+                if ((_jpg_buf_len - processed) <  packetSize)packetSize = (_jpg_buf_len - processed);
+                vTaskDelay(1/ portTICK_PERIOD_MS);
+            }
+            
         }
         if(!res_error) {
             _streamserver->sendContent_P ((const char *)_STREAM_BOUNDARY, strlen(_STREAM_BOUNDARY));
@@ -156,7 +172,8 @@ void Camera::handle_stream()
             log_esp3d("stream error stop connection");
             break;
         }
-        Hal::wait(10);
+        //Hal::wait(CAMERA_YIELD*100);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
     _connected = false;
     _streamserver->sendContent("");
@@ -261,16 +278,18 @@ void Camera::handle_snap()
     _streamserver->sendContent("");
 }
 
-
+#ifdef CAMERA_INDEPENDANT_TASK
 void ESP3DStreamTaskfn( void * parameter )
 {
     Hal::wait(100);  // Yield to other tasks
     for(;;) {
-        esp3d_camera.handle();
-        Hal::wait(0);  // Yield to other tasks
+        esp3d_camera.process();
+        //Hal::wait(CAMERA_YIELD);  // Yield to other tasks
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
     vTaskDelete( NULL );
 }
+#endif //CAMERA_INDEPENDANT_TASK
 
 Camera::Camera()
 {
@@ -454,15 +473,24 @@ bool Camera::startStreamServer()
         _streamserver->begin();
         String stmp = "Camera server started port " + String(_port);
         output.printMSG(stmp.c_str());
-        xTaskCreatePinnedToCore(
-            ESP3DStreamTaskfn, /* Task function. */
-            "ESP3DStream Task", /* name of task. */
-            8192, /* Stack size of task */
-            NULL, /* parameter of the task */
-            ESP3DSTREAM_RUNNING_PRIORITY, /* priority of the task */
-            NULL, /* Task handle to keep track of created task */
-            ESP3DSTREAM_RUNNING_CORE    /* Core to run the task */
-        );
+#ifdef CAMERA_INDEPENDANT_TASK
+        //create serial task once
+        if (_hcameratask == nullptr) {
+            xTaskCreatePinnedToCore(
+                ESP3DStreamTaskfn, /* Task function. */
+                "ESP3DStream Task", /* name of task. */
+                8192, /* Stack size of task */
+                NULL, /* parameter of the task */
+                ESP3DSTREAM_RUNNING_PRIORITY, /* priority of the task */
+                &_hcameratask, /* Task handle to keep track of created task */
+                ESP3DSTREAM_RUNNING_CORE    /* Core to run the task */
+            );
+            if (_hcameratask == nullptr) {
+                log_esp3d("Camera Task creation failed");
+                return false;
+            }
+        }
+#endif //CAMERA_INDEPENDANT_TASK
         _server_started = true;
     }
     for (int j = 0; j < 5; j++) {
@@ -532,13 +560,20 @@ void Camera::end()
     }
 }
 
-void Camera::handle()
+void Camera::process()
 {
     if (_started) {
         if (_streamserver) {
             _streamserver->handleClient();
         }
     }
+}
+
+void Camera::handle()
+{
+#ifndef CAMERA_INDEPENDANT_TASK
+    process();
+#endif //CAMERA_INDEPENDANT_TASK
 }
 
 uint8_t Camera::GetModel()

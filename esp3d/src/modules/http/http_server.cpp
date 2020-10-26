@@ -26,6 +26,7 @@
 #include <WebServer.h>
 #define ESP3DHTTP_RUNNING_PRIORITY 1
 #define ESP3DHTTP_RUNNING_CORE 1
+#define HTTP_YIELD  10
 
 #endif //ARDUINO_ARCH_ESP32
 #if defined (ARDUINO_ARCH_ESP8266)
@@ -43,6 +44,8 @@ bool HTTP_Server::_started = false;
 uint16_t HTTP_Server::_port = 0;
 WEBSERVER * HTTP_Server::_webserver = nullptr;
 uint8_t HTTP_Server::_upload_status = UPLOAD_STATUS_NONE;
+
+TaskHandle_t _httptask= nullptr;
 
 void HTTP_Server::init_handlers()
 {
@@ -188,7 +191,7 @@ void ESP3DHTTPTaskfn( void * parameter )
     Hal::wait(100);  // Yield to other tasks
     for(;;) {
         HTTP_Server::handleProcess();
-        Hal::wait(0);  // Yield to other tasks
+        Hal::wait(HTTP_YIELD);  // Yield to other tasks
     }
     vTaskDelete( NULL );
 }
@@ -222,15 +225,21 @@ bool HTTP_Server::begin()
     AuthenticationService::begin(_webserver);
 #endif //AUTHENTICATION_FEATURE
 #ifdef HTTP_INDEPENDANT_TASK
-    xTaskCreatePinnedToCore(
-        ESP3DHTTPTaskfn, /* Task function. */
-        "ESP3DHTTP Task", /* name of task. */
-        8096, /* Stack size of task */
-        NULL, /* parameter of the task */
-        ESP3DHTTP_RUNNING_PRIORITY, /* priority of the task */
-        NULL, /* Task handle to keep track of created task */
-        ESP3DHTTP_RUNNING_CORE    /* Core to run the task */
-    );
+    if(_httptask == nullptr) {
+        xTaskCreatePinnedToCore(
+            ESP3DHTTPTaskfn, /* Task function. */
+            "ESP3DHTTP Task", /* name of task. */
+            8096, /* Stack size of task */
+            NULL, /* parameter of the task */
+            ESP3DHTTP_RUNNING_PRIORITY, /* priority of the task */
+            &_httptask, /* Task handle to keep track of created task */
+            ESP3DHTTP_RUNNING_CORE    /* Core to run the task */
+        );
+        if (_httptask == nullptr) {
+            log_esp3d("HTTP Task creation failed");
+            return false;
+        }
+    }
 #endif //HTTP_INDEPENDANT_TASK
     _started = no_error;
     return no_error;

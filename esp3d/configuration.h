@@ -211,7 +211,9 @@
 #define CUSTOM_CAMERA_NAME "ESP32-CAM"
 
 #ifdef CAMERA_DEVICE
-#define HTTP_INDEPENDANT_TASK
+//#define HTTP_INDEPENDANT_TASK
+//#define SERIAL_INDEPENDANT_TASK
+#define CAMERA_INDEPENDANT_TASK
 #endif //CAMERA_DEVICE 
 
 //Allow remote access by enabling cross origin access
@@ -219,7 +221,7 @@
 //this should be enabled only in specific cases
 //like show the camera in web page different than device web server
 //if you do not know what is that then better left it commented
-//#define ESP_ACCESS_CONTROL_ALLOW_ORIGIN
+#define ESP_ACCESS_CONTROL_ALLOW_ORIGIN
 
 //ESP_GCODE_HOST_FEATURE : allow to send GCODE with ack
 #define ESP_GCODE_HOST_FEATURE
