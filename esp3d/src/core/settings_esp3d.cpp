@@ -160,9 +160,9 @@ const char DEFAULT_ADMIN_PWD []   =      "admin";
 const char DEFAULT_USER_PWD []   =       "user";
 #endif //AUTHENTICATION_FEATURE
 #ifdef TIMESTAMP_FEATURE
-const char DEFAULT_TIME_SERVER1 []   =  "1.pool.ntp.org";
-const char DEFAULT_TIME_SERVER2 []   =  "2.pool.ntp.org";
-const char DEFAULT_TIME_SERVER3 []   =  "0.pool.ntp.org";
+const char DEFAULT_TIME_SERVER1 []   =  "ntp1.aliyun.com";
+const char DEFAULT_TIME_SERVER2 []   =  "ntp2.aliyun.com";
+const char DEFAULT_TIME_SERVER3 []   =  "ntp3.aliyun.com";
 #endif //TIMESTAMP_FEATURE
 const char DEFAULT_SETTINGS_VERSION []  =   "ESP3D";
 

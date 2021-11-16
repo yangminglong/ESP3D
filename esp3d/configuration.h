@@ -67,7 +67,7 @@
 //OLED_I2C_SSD1306          1
 //OLED_I2C_SSDSH1106        2
 //TFT_SPI_ILI9341_320X240   3
-//TFT_SPI_ILI9488_480X320 4
+//TFT_SPI_ILI9488_480X320   4
 //#define DISPLAY_DEVICE TFT_SPI_ILI9488_480X320
 
 //UI_TYPE_BASIC      1
@@ -131,7 +131,7 @@
 //ESP_SD_NATIVE               1 //esp32 / esp8266
 //ESP_SDIO                    2 //esp32 only
 //ESP_SDFAT                   3 //esp8266 (same as native) / esp32
-//#define SD_DEVICE    ESP_SD_NATIVE
+#define SD_DEVICE    ESP_SDFAT2
 
 //SDIO mode
 #define SD_ONE_BIT_MODE true
@@ -140,21 +140,21 @@
 //ESP_NO_SD
 //ESP_DIRECT_SD
 //ESP_SHARED_SD
-//#define SD_DEVICE_CONNECTION  ESP_DIRECT_SD
+#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
-//#define ESP_SD_DETECT_PIN       4
+#define ESP_SD_DETECT_PIN       4
 //value expected for ESP_SD_DETECT_PIN (0 or 1)
 #define ESP_SD_DETECT_VALUE      0
 
-//#define ESP_SD_CS_PIN   5
+#define ESP_SD_CS_PIN   5
 
 //FILESYSTEM_FEATURE: to host some files on flash
 //ESP_SPIFFS_FILESYSTEM       0
 //ESP_FAT_FILESYSTEM          1
 //ESP_LITTLEFS_FILESYSTEM     2
-#define FILESYSTEM_FEATURE ESP_LITTLEFS_FILESYSTEM
+#define FILESYSTEM_FEATURE ESP_FAT_FILESYSTEM
 
 //Allows to mount /FS and /SD under / for FTP server
 //#define GLOBAL_FILESYSTEM_FEATURE
@@ -165,26 +165,26 @@
 //FS_SD          mount SD FS
 //FS_USBDISK     mount USB disk FS
 
-//#define WEBDAV_FEATURE  FS_FLASH
+#define WEBDAV_FEATURE  FS_SD
 
 //FTP_FEATURE : enable FTP feature
 //FS_ROOT        mount all FS
 //FS_FLASH       mount Flash FS
 //FS_SD          mount SD FS
 //FS_USBDISK     mount USB disk FS
-//#define FTP_FEATURE  FS_ROOT
+#define FTP_FEATURE  FS_SD
 
 //DIRECT_PIN_FEATURE: allow to access pin using ESP201 command
 #define DIRECT_PIN_FEATURE
 
 //TIMESTAMP_FEATURE: set time system
-//#define TIMESTAMP_FEATURE
+#define TIMESTAMP_FEATURE
 
 //FILESYSTEM_TIMESTAMP_FEATURE: display last write time from Flash files
-//#define FILESYSTEM_TIMESTAMP_FEATURE
+#define FILESYSTEM_TIMESTAMP_FEATURE
 
 //FILESYSTEM_TIMESTAMP_FEATURE:display last write time from SD files
-//#define SD_TIMESTAMP_FEATURE
+#define SD_TIMESTAMP_FEATURE
 
 //MDNS_FEATURE: this feature allow  type the name defined
 //in web browser by default: http:\\esp8266.local and connect
@@ -198,7 +198,7 @@
 #define CAPTIVE_PORTAL_FEATURE
 
 //OTA_FEATURE: this feature is arduino update over the air
-//#define OTA_FEATURE
+#define OTA_FEATURE
 
 //WEB_UPDATE_FEATURE: allow to flash fw using web UI
 #define WEB_UPDATE_FEATURE
