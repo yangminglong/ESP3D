@@ -24,8 +24,8 @@
 
 //WiFi setup station as default, use AP mode first if not done
 //Note: need both defined to enable it
-//#define STATION_WIFI_SSID "*********"
-//#define STATION_WIFI_PASSWORD "*********"
+#define STATION_WIFI_SSID "XIAOMI"
+#define STATION_WIFI_PASSWORD "ily108108"
 //you can also use a different config file for SSID/password
 //this file is ignored by github
 #if defined __has_include
@@ -144,17 +144,17 @@
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
-#define ESP_SD_DETECT_PIN       4
+#define ESP_SD_DETECT_PIN       38
 //value expected for ESP_SD_DETECT_PIN (0 or 1)
 #define ESP_SD_DETECT_VALUE      0
 
-#define ESP_SD_CS_PIN   5
+#define ESP_SD_CS_PIN   37
 
 //FILESYSTEM_FEATURE: to host some files on flash
 //ESP_SPIFFS_FILESYSTEM       0
 //ESP_FAT_FILESYSTEM          1
 //ESP_LITTLEFS_FILESYSTEM     2
-#define FILESYSTEM_FEATURE ESP_FAT_FILESYSTEM
+#define FILESYSTEM_FEATURE ESP_LITTLEFS_FILESYSTEM
 
 //Allows to mount /FS and /SD under / for FTP server
 //#define GLOBAL_FILESYSTEM_FEATURE
@@ -253,7 +253,7 @@
 //DEBUG_OUTPUT_SERIAL2 3
 //DEBUG_OUTPUT_TELNET  4
 //DEBUG_OUTPUT_WEBSOCKET  5
-//#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
+#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
 
 #ifdef ESP_DEBUG_FEATURE
 #define DEBUG_BAUDRATE 115200
@@ -288,9 +288,9 @@
  * Settings
  *
  * **********************************/
-//SETTINGS_IN_EEPROM 0
-//SETTINGS_IN_PREFERENCES 1
-#define ESP_SAVE_SETTINGS SETTINGS_IN_EEPROM
+//SETTINGS_IN_EEPROM 1
+//SETTINGS_IN_PREFERENCES 2
+#define ESP_SAVE_SETTINGS SETTINGS_IN_PREFERENCES
 
 /************************************
  *
