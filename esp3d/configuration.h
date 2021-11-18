@@ -131,7 +131,7 @@
 //ESP_SD_NATIVE               1 //esp32 / esp8266
 //ESP_SDIO                    2 //esp32 only
 //ESP_SDFAT                   3 //esp8266 (same as native) / esp32
-#define SD_DEVICE    ESP_SD_NATIVE
+#define SD_DEVICE    ESP_SDFAT2
 
 //SDIO mode
 #define SD_ONE_BIT_MODE true
@@ -253,7 +253,7 @@
 //DEBUG_OUTPUT_SERIAL2 3
 //DEBUG_OUTPUT_TELNET  4
 //DEBUG_OUTPUT_WEBSOCKET  5
-// #define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
+#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
 
 #ifdef ESP_DEBUG_FEATURE
 #define DEBUG_BAUDRATE 115200
