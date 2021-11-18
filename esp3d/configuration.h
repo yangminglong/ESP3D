@@ -131,7 +131,7 @@
 //ESP_SD_NATIVE               1 //esp32 / esp8266
 //ESP_SDIO                    2 //esp32 only
 //ESP_SDFAT                   3 //esp8266 (same as native) / esp32
-#define SD_DEVICE    ESP_SDFAT2
+#define SD_DEVICE    ESP_SD_NATIVE
 
 //SDIO mode
 #define SD_ONE_BIT_MODE true
@@ -140,15 +140,15 @@
 //ESP_NO_SD
 //ESP_DIRECT_SD
 //ESP_SHARED_SD
-#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
+#define SD_DEVICE_CONNECTION  ESP_DIRECT_SD
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
-#define ESP_SD_DETECT_PIN       38
+#define ESP_SD_DETECT_PIN       -1
 //value expected for ESP_SD_DETECT_PIN (0 or 1)
 #define ESP_SD_DETECT_VALUE      0
 
-#define ESP_SD_CS_PIN   37
+#define ESP_SD_CS_PIN   5
 
 //FILESYSTEM_FEATURE: to host some files on flash
 //ESP_SPIFFS_FILESYSTEM       0
@@ -157,7 +157,7 @@
 #define FILESYSTEM_FEATURE ESP_LITTLEFS_FILESYSTEM
 
 //Allows to mount /FS and /SD under / for FTP server
-//#define GLOBAL_FILESYSTEM_FEATURE
+#define GLOBAL_FILESYSTEM_FEATURE
 
 //WEBDAV_FEATURE : enable WebDav feature
 //FS_ROOT        mount all FS
@@ -204,7 +204,7 @@
 #define WEB_UPDATE_FEATURE
 
 //SD_UPDATE_FEATURE: allow to flash/configure fw using SD
-//#define SD_UPDATE_FEATURE
+#define SD_UPDATE_FEATURE
 
 //NOTIFICATION_FEATURE : allow to push notifications
 #define NOTIFICATION_FEATURE
@@ -253,7 +253,7 @@
 //DEBUG_OUTPUT_SERIAL2 3
 //DEBUG_OUTPUT_TELNET  4
 //DEBUG_OUTPUT_WEBSOCKET  5
-#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
+// #define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
 
 #ifdef ESP_DEBUG_FEATURE
 #define DEBUG_BAUDRATE 115200
