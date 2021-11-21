@@ -35,11 +35,11 @@ sd_native_esp8266.cpp - ESP3D sd support class
 #define SD_CONFIG SdSpiConfig((ESP_SD_CS_PIN == -1)?SS:ESP_SD_CS_PIN, SHARED_SPI)
 #endif  // HAS_SDIO_CLASS
 
-extern File tSDFile_handle[ESP_MAX_SD_OPENHANDLE];
+extern FsFile tSDFile_handle[ESP_MAX_SD_OPENHANDLE];
 
 //Max Freq Working
 #define FREQMZ 40
-SdFat SD;
+SdFs SD;
 
 void dateTime (uint16_t* date, uint16_t* dtime)
 {
@@ -51,7 +51,7 @@ void dateTime (uint16_t* date, uint16_t* dtime)
     *dtime = FAT_TIME (tmstruct.tm_hour, tmstruct.tm_min, tmstruct.tm_sec);
 }
 
-time_t getDateTimeFile(File & filehandle)
+time_t getDateTimeFile(FsFile & filehandle)
 {
     static time_t dt = 0;
 #ifdef SD_TIMESTAMP_FEATURE
@@ -300,7 +300,7 @@ ESP_SDFile ESP_SD::open(const char* path, uint8_t mode)
             return ESP_SDFile();
         }
     }
-    File tmp = SD.open(path, (mode == ESP_FILE_READ)?FILE_READ:(mode == ESP_FILE_WRITE)?FILE_WRITE:FILE_WRITE);
+    FsFile tmp = SD.open(path, (mode == ESP_FILE_READ)?FILE_READ:(mode == ESP_FILE_WRITE)?FILE_WRITE:FILE_WRITE);
     ESP_SDFile esptmp(&tmp, tmp.isDir(),(mode == ESP_FILE_READ)?false:true, path);
     return esptmp;
 }
@@ -343,9 +343,9 @@ bool ESP_SD::rmdir(const char *path)
     String p = path;
     pathlist.push(p);
     while (pathlist.count() > 0) {
-        File dir = SD.open(pathlist.getLast().c_str());
+        FsFile dir = SD.open(pathlist.getLast().c_str());
         dir.rewindDirectory();
-        File f = dir.openNextFile();
+        FsFile f = dir.openNextFile();
         bool candelete = true;
         while (f) {
             if (f.isDir()) {
@@ -356,7 +356,7 @@ bool ESP_SD::rmdir(const char *path)
                 newdir = tmp;
                 pathlist.push(newdir);
                 f.close();
-                f = File();
+                f = FsFile();
             } else {
                 char tmp[255];
                 f.getName(tmp,254);
@@ -383,7 +383,7 @@ void ESP_SD::closeAll()
 {
     for (uint8_t i = 0; i < ESP_MAX_SD_OPENHANDLE; i++) {
         tSDFile_handle[i].close();
-        tSDFile_handle[i] = File();
+        tSDFile_handle[i] = FsFile();
     }
 }
 
@@ -411,7 +411,7 @@ ESP_SDFile::ESP_SDFile(void* handle, bool isdir, bool iswritemode, const char * 
     bool set =false;
     for (uint8_t i=0; (i < ESP_MAX_SD_OPENHANDLE) && !set; i++) {
         if (!tSDFile_handle[i]) {
-            tSDFile_handle[i] = *((File*)handle);
+            tSDFile_handle[i] = *((FsFile*)handle);
             //filename
             char tmp[255];
             tSDFile_handle[i].getName(tmp,254);
@@ -443,7 +443,7 @@ ESP_SDFile::ESP_SDFile(void* handle, bool isdir, bool iswritemode, const char * 
                 _lastwrite = 0;
             }
             _index = i;
-            //log_esp3d("Opening File at index %d",_index);
+            //log_esp3d("Opening FsFile at index %d",_index);
             set = true;
         }
     }
@@ -451,34 +451,35 @@ ESP_SDFile::ESP_SDFile(void* handle, bool isdir, bool iswritemode, const char * 
 //todo need also to add short filename
 const char* ESP_SDFile::shortname() const
 {
-    static char sname[13];
-    File ftmp = SD.open(_filename.c_str());
-    if (ftmp) {
-        ftmp.getSFN(sname);
-        ftmp.close();
-        return sname;
-    } else {
-        return _name.c_str();
-    }
+    // static char sname[13];
+    // FsFile ftmp = SD.open(_filename.c_str());
+    // if (ftmp) {
+    //     ftmp.getSFN(sname);
+    //     ftmp.close();
+    //     return sname;
+    // } else {
+    //     return _name.c_str();
+    // }
+    return _name.c_str();
 }
 
 void ESP_SDFile::close()
 {
     if (_index != -1) {
-        //log_esp3d("Closing File at index %d", _index);
+        //log_esp3d("Closing FsFile at index %d", _index);
         tSDFile_handle[_index].close();
         //reopen if mode = write
         //udate size + date
         if (_iswritemode && !_isdir) {
-            File ftmp = SD.open(_filename.c_str());
+            FsFile ftmp = SD.open(_filename.c_str());
             if (ftmp) {
                 _size = ftmp.size();
                 _lastwrite = getDateTimeFile(ftmp);
                 ftmp.close();
             }
         }
-        tSDFile_handle[_index] = File();
-        //log_esp3d("Closing File at index %d",_index);
+        tSDFile_handle[_index] = FsFile();
+        //log_esp3d("Closing FsFile at index %d",_index);
         _index = -1;
     }
 }
@@ -489,7 +490,7 @@ ESP_SDFile  ESP_SDFile::openNextFile()
         log_esp3d("openNextFile failed");
         return ESP_SDFile();
     }
-    File tmp = tSDFile_handle[_index].openNextFile();
+    FsFile tmp = tSDFile_handle[_index].openNextFile();
     if (tmp) {
         char tmps[255];
         tmp.getName(tmps,254);

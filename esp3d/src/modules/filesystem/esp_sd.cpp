@@ -36,7 +36,7 @@ File tSDFile_handle[ESP_MAX_SD_OPENHANDLE];
 sdfat::File tSDFile_handle[ESP_MAX_SD_OPENHANDLE];
 #elif ((SD_DEVICE == ESP_SDFAT) || (SD_DEVICE == ESP_SDFAT2)) && defined (ARDUINO_ARCH_ESP32)
 #include <SdFat.h>
-File tSDFile_handle[ESP_MAX_SD_OPENHANDLE];
+FsFile tSDFile_handle[ESP_MAX_SD_OPENHANDLE];
 #else
 #include <FS.h>
 File tSDFile_handle[ESP_MAX_SD_OPENHANDLE];

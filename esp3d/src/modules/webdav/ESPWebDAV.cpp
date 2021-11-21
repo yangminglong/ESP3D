@@ -881,7 +881,7 @@ void ESPWebDAVCore::handleGet(ResourceType resource, WebDavFile& file, bool isGe
             while (remaining > 0 && file.available()) {
                 size_t toRead = (size_t)remaining > sizeof(buf) ? sizeof(buf) : remaining;
                 size_t numRead = file.read((uint8_t*)buf, toRead);
-                log_esp3d("read %d bytes from file", (int)numRead);
+                // log_esp3d("read %d bytes from file", (int)numRead);
 
                 if ((chunked && !sendContent(buf, numRead))
                         || (!chunked && client->write(buf, numRead) != numRead)) {
@@ -892,9 +892,9 @@ void ESPWebDAVCore::handleGet(ResourceType resource, WebDavFile& file, bool isGe
                 }
 
 #if defined(ESP_DEBUG_FEATURE)
-                for (size_t i = 0; i < 80 && i < numRead; i++) {
-                    log_esp3ds("%c", buf[i] < 32 || buf[i] > 127 ? '.' : buf[i]);
-                }
+                // for (size_t i = 0; i < 80 && i < numRead; i++) {
+                //     log_esp3ds("%c", buf[i] < 32 || buf[i] > 127 ? '.' : buf[i]);
+                // }
 #endif
 
                 remaining -= numRead;
@@ -904,12 +904,12 @@ void ESPWebDAVCore::handleGet(ResourceType resource, WebDavFile& file, bool isGe
                         transferStatusFn(file.name(), percent = p, false);
                     }
                 }
-                log_esp3d("wrote %d bytes to http client", (int)numRead);
+                // log_esp3d("wrote %d bytes to http client", (int)numRead);
             }
         }
     }
-
-    log_esp3d("File %d bytes sent in: %d sec", fileSize,(millis() - tStart) / 1000);
+    
+    log_esp3d("File %d bytes sent in: %d sec. %f KB/s", fileSize,(millis() - tStart) / 1000, fileSize / 1024.0 /((millis() - tStart) / 1000) );
 }
 
 
@@ -1547,18 +1547,18 @@ bool ESPWebDAVCore::sendContent(const char* data, size_t size)
         if (client->write(chunkSize, l) != l) {
             return false;
         }
-        log_esp3d("---- chunk %s", chunkSize);
+        // log_esp3d("---- chunk %s", chunkSize);
     }
 
 #if defined(ESP_DEBUG_FEATURE)
-    log_esp3d("---- %scontent (%d bytes):", _chunked ? "chunked " : "", (int)size);
-    for (size_t i = 0; i < DEBUG_LEN && i < size; i++) {
-        log_esp3ds("%c", data[i] < 32 || data[i] > 127 ? '.' : data[i]);
-    }
-    if (size > DEBUG_LEN) {
-        log_esp3ds("...");
-    }
-    log_esp3ds("\n");
+    // log_esp3d("---- %scontent (%d bytes):", _chunked ? "chunked " : "", (int)size);
+    // for (size_t i = 0; i < DEBUG_LEN && i < size; i++) {
+    //     log_esp3ds("%c", data[i] < 32 || data[i] > 127 ? '.' : data[i]);
+    // }
+    // if (size > DEBUG_LEN) {
+    //     log_esp3ds("...");
+    // }
+    // log_esp3ds("\n");
 #endif
 
     if (client->write(data, size) != size) {

@@ -133,6 +133,10 @@
 //ESP_SDFAT                   3 //esp8266 (same as native) / esp32
 #define SD_DEVICE    ESP_SDFAT2
 
+#if defined(SD_DEVICE) &&  (SD_DEVICE == ESP_SDFAT2)
+#define SDFAT_FILE_TYPE 3
+#endif
+
 //SDIO mode
 #define SD_ONE_BIT_MODE true
 
