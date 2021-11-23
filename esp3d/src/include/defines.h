@@ -34,9 +34,10 @@
 
 
 //Serial
-#define USE_SERIAL_0 1
-#define USE_SERIAL_1 2
-#define USE_SERIAL_2 3
+#define USE_SERIAL_0   1
+#define USE_SERIAL_1   2
+#define USE_SERIAL_2   3
+#define USE_SERIAL_USB 4
 
 //Communication protocols
 #define RAW_SERIAL 0

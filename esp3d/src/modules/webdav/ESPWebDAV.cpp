@@ -62,7 +62,7 @@
 #endif
 #undef crc32
 #define crc32(a, len) mz_crc32( 0xffffffff,(const unsigned char *)a, len)
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4320 //1440*3
 #endif //ARDUINO_ARCH_ESP32
 
 
@@ -909,7 +909,8 @@ void ESPWebDAVCore::handleGet(ResourceType resource, WebDavFile& file, bool isGe
         }
     }
     
-    log_esp3d("File %d bytes sent in: %d sec. %f KB/s", fileSize,(millis() - tStart) / 1000, fileSize / 1024.0 /((millis() - tStart) / 1000) );
+    unsigned long usedTime = max((unsigned long)1, (millis() - tStart) / 1000);
+    log_esp3d("File %d bytes sent in: %d sec. speed: %.1f KB/s", fileSize, usedTime, (fileSize/1024.0/usedTime));
 }
 
 
@@ -993,7 +994,7 @@ void ESPWebDAVCore::handlePut(ResourceType resource)
             return handleWriteError("Timed out waiting for data", file);
         }
 
-        log_esp3d("File %d  bytes stored in: %d sec",(contentLengthHeader - numRemaining), ((millis() - tStart) / 1000));
+        log_esp3d("File %d  bytes stored in: %d sec",(contentLengthHeader - numRemaining), ((millis() - tStart) / 1000));    
     }
     file.close();
     log_esp3d("file written ('%s': %d = %d bytes)", String(file.name()).c_str(), (int)contentLengthHeader, (int)file.size());

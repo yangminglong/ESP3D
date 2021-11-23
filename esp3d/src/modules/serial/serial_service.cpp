@@ -28,6 +28,7 @@
 #endif //COMMUNICATION_PROTOCOL == MKS_SERIAL
 #include "../authentication/authentication_service.h"
 
+
 //Serial Parameters
 #define ESP_SERIAL_PARAM SERIAL_8N1
 
@@ -42,6 +43,12 @@
 #if ESP_SERIAL_OUTPUT == USE_SERIAL_2
 #define ESP3D_SERIAL Serial2
 #endif //USE_SERIAL_2
+
+#if ESP_SERIAL_OUTPUT == USE_SERIAL_USB
+#include "../usbhostserial/USBHostSerial.h"
+#define ESP3D_SERIAL SerialUSB
+#endif //USE_SERIAL_2
+
 
 #define ESP3DSERIAL_RUNNING_PRIORITY 1
 #define ESP3DSERIAL_RUNNING_CORE 1
@@ -112,7 +119,11 @@ bool SerialService::begin()
 #endif //ESP_RX_PIN != -1
 #endif //ARDUINO_ARCH_ESP8266
 #if defined(ARDUINO_ARCH_ESP32)
-        ESP3D_SERIAL.begin (br, ESP_SERIAL_PARAM, ESP_RX_PIN, ESP_TX_PIN);
+#if ESP_SERIAL_OUTPUT == USE_SERIAL_USB
+    ESP3D_SERIAL.begin (br);
+#else
+    ESP3D_SERIAL.begin (br, ESP_SERIAL_PARAM, ESP_RX_PIN, ESP_TX_PIN);
+#endif
 #if defined(SERIAL_INDEPENDANT_TASK)
         //create serial task once
         if (_hserialtask == nullptr) {

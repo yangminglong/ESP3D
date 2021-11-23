@@ -12,6 +12,7 @@
         "string_view": "cpp",
         "initializer_list": "cpp",
         "memory": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "*.tpp": "cpp"
     }
 }

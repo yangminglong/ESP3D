@@ -276,10 +276,11 @@
  *
  * **********************************/
 //which serial ESP use to communicate to printer (ESP32 has 3 serials available, ESP8266 only 2)
-//USE_SERIAL_0 for ESP8266/32
-//USE_SERIAL_1 for ESP8266/32
-//USE_SERIAL_2 for ESP32 Only
-#define ESP_SERIAL_OUTPUT USE_SERIAL_0
+//USE_SERIAL_0   for ESP8266/32
+//USE_SERIAL_1   for ESP8266/32
+//USE_SERIAL_2   for ESP32 Only
+//USE_SERIAL_USB for ESP32-S2 Only
+#define ESP_SERIAL_OUTPUT USE_SERIAL_USB
 
 //Serial rx buffer size is 256 but can be extended
 #define SERIAL_RX_BUFFER_SIZE 512

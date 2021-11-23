@@ -72,6 +72,7 @@ public:
     {
         return _started;
     }
+
 private:
     bool _started;
     bool _needauthentication;
