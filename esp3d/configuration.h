@@ -148,11 +148,15 @@
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
-#define ESP_SD_DETECT_PIN       -1
+#define ESP_SD_DETECT_PIN 28
 //value expected for ESP_SD_DETECT_PIN (0 or 1)
-#define ESP_SD_DETECT_VALUE      0
+#define ESP_SD_DETECT_VALUE 0
 
-#define ESP_SD_CS_PIN   5
+#define ESP_SD_SCK_PIN 7
+#define ESP_SD_MISO_PIN 8
+#define ESP_SD_MOSI_PIN 9
+
+#define ESP_SD_CS_PIN 37
 
 //FILESYSTEM_FEATURE: to host some files on flash
 //ESP_SPIFFS_FILESYSTEM       0
