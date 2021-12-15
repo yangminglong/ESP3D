@@ -131,9 +131,9 @@
 //ESP_SD_NATIVE               1 //esp32 / esp8266
 //ESP_SDIO                    2 //esp32 only
 //ESP_SDFAT                   3 //esp8266 (same as native) / esp32
-#define SD_DEVICE    ESP_SDFAT2
+#define SD_DEVICE ESP_SD_NATIVE
 
-#if defined(SD_DEVICE) &&  (SD_DEVICE == ESP_SDFAT2)
+#if defined(SD_DEVICE) && (SD_DEVICE == ESP_SDFAT2)
 #define SDFAT_FILE_TYPE 3
 #endif
 
@@ -144,7 +144,7 @@
 //ESP_NO_SD
 //ESP_DIRECT_SD
 //ESP_SHARED_SD
-#define SD_DEVICE_CONNECTION  ESP_DIRECT_SD
+#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
 
 //pin if reader has insert detection feature
 //let -1 or comment if none

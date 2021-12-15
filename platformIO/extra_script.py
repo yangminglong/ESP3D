@@ -21,7 +21,7 @@ if isfile(configuration_file):
                 if entry2:
                     print("Add ESP8266SDFat2 library to path")
                     env["LIBSOURCE_DIRS"].append(
-                        "extra-libraries/ESP8266SDFat2")
+                        "extra-libraries/ESP826SDF6SDFat2")
                 else:
                     print("Add ESP8266SDFat library to path")
                     env["LIBSOURCE_DIRS"].append(

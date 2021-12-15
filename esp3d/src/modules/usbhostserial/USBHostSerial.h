@@ -3,8 +3,8 @@
 
 #include "esp32-hal-uart.h"
 #include "Stream.h"
-#include "../esptinyusb/usb_acm.hpp"
-#include "../esptinyusb/usb_host.hpp"
+#include "usb_acm.hpp"
+#include "usb_host.hpp"
 
 class USBHostSerial : public Stream
 {

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "usb/usb_host.h"
 #include "USBHostSerial.h"
-#include "../CircularBuffer/CircularBuffer.h"
+#include "CircularBuffer.h"
 
 USBacmDevice *device = nullptr;   // when USB class is detected from descriptor
 USBhost host;           // host is required to detect any device, before USB class is initialized
