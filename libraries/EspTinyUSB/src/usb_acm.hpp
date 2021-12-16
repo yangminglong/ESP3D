@@ -31,7 +31,7 @@ public:
     void getLineCoding();
     void clearCommFeature();
     void INDATA();
-    void OUTDATA(const uint8_t*, size_t);
+    void OUTDATA(uint8_t*, size_t);
     void onEvent(cdc_event_cb_t _cb);
     bool isConnected();
 
