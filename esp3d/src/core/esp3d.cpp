@@ -93,8 +93,9 @@ bool Esp3D::begin()
 #endif // SD_UPDATE_FEATURE
     log_esp3d("Mode %d", WiFi.getMode());
     if (!Settings_ESP3D::begin()) {
-        log_esp3d("Need reset settings");
+        log_esp3d("Settings begin faild. Need reset settings");
         reset();
+        log_esp3d("have reset settings. restart now.");
         // Restart ESP3D
         restart_now();
     }
