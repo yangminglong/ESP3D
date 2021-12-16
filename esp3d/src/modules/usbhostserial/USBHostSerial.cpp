@@ -79,11 +79,15 @@ void client_event_callback(const usb_host_client_event_msg_t *event_msg, void *a
     }
     else // USB_HOST_CLIENT_EVENT_DEV_GONE
     {
-      host.close();
+      // host.close();
       if (device) {
+        device->release();
+        device->onEvent(nullptr);
         delete device;
         device = nullptr;
       } 
+      buffer.clear();
+
       log_w("DEVICE gone event"); //USB_HOST_CLIENT_EVENT_DEV_GONE
     }
 }
@@ -104,7 +108,7 @@ bool USBHostSerial::begin(unsigned long baud)
   bitRate = baud;
 
   device->onEvent(acm_events);
-  device->setControlLine(1, 1);
+  device->setControlLine(1, 0);
   // device->INDATA();
   buffer.clear();
 
@@ -113,7 +117,12 @@ bool USBHostSerial::begin(unsigned long baud)
 
 void USBHostSerial::end()
 {
-  device->onEvent(nullptr);
+  if (device) {
+    device->release();
+    device->onEvent(nullptr);
+    delete device;
+    device = nullptr;
+  } 
   buffer.clear();
 }
 
