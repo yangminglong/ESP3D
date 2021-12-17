@@ -18,7 +18,7 @@ void acm_events(int event, void *data, size_t len)
     switch (event)
     {
 
-    case CDC_DATA_IN:
+    case CDC_DATA_IN: //1
     {
       for (size_t i = 0; i < len ; ++i ) {
         buffer.push(*(((uint8_t*)data)+i));
@@ -26,8 +26,15 @@ void acm_events(int event, void *data, size_t len)
 
       break;
     }
-    case CDC_DATA_OUT:
-        // device->INDATA();
+    case CDC_DATA_OUT: // 2
+      {
+        const uint8_t* str = (const uint8_t*)data;
+        printf("send:");
+        for (size_t i = 0; i < len ; ++i ) {
+          printf("%c", *(str+i));
+        }
+        printf("\n");
+      }
         break;
     case CDC_CTRL_SET_CONTROL_LINE_STATE:
         log_i("CDC_CTRL_SET_CONTROL_LINE_STATE");

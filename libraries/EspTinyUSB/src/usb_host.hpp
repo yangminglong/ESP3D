@@ -15,12 +15,13 @@ protected:
     uint8_t _configs;
     uint8_t _itfs;
 
+    void startClientTask();
 public:
     USBhost();
     ~USBhost();
 
     usb_host_client_handle_t client_hdl;
-    bool init(bool create_tasks = true);
+    bool init();
     bool open(const usb_host_client_event_msg_t *event_msg);
     void close();
     usb_device_info_t getDeviceInfo();

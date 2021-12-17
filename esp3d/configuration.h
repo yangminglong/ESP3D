@@ -58,7 +58,7 @@
 #define HTTP_FEATURE
 
 //TELNET_FEATURE : enable Telnet function
-#define TELNET_FEATURE
+// #define TELNET_FEATURE
 
 //WS_DATA_FEATURE: allow to connect serial from Websocket
 //#define WS_DATA_FEATURE
@@ -144,19 +144,19 @@
 //ESP_NO_SD
 //ESP_DIRECT_SD
 //ESP_SHARED_SD
-#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
+#define SD_DEVICE_CONNECTION  ESP_DIRECT_SD
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
-#define ESP_SD_DETECT_PIN 28
+#define ESP_SD_DETECT_PIN -1
 //value expected for ESP_SD_DETECT_PIN (0 or 1)
 #define ESP_SD_DETECT_VALUE 0
 
-#define ESP_SD_SCK_PIN 7
-#define ESP_SD_MISO_PIN 8
-#define ESP_SD_MOSI_PIN 9
+// #define ESP_SD_SCK_PIN 7
+// #define ESP_SD_MISO_PIN 8
+// #define ESP_SD_MOSI_PIN 9
 
-#define ESP_SD_CS_PIN 37
+#define ESP_SD_CS_PIN -1
 
 //FILESYSTEM_FEATURE: to host some files on flash
 //ESP_SPIFFS_FILESYSTEM       0
@@ -173,14 +173,14 @@
 //FS_SD          mount SD FS
 //FS_USBDISK     mount USB disk FS
 
-#define WEBDAV_FEATURE  FS_SD
+// #define WEBDAV_FEATURE  FS_SD
 
 //FTP_FEATURE : enable FTP feature
 //FS_ROOT        mount all FS
 //FS_FLASH       mount Flash FS
 //FS_SD          mount SD FS
 //FS_USBDISK     mount USB disk FS
-#define FTP_FEATURE  FS_SD
+// #define FTP_FEATURE  FS_SD
 
 //DIRECT_PIN_FEATURE: allow to access pin using ESP201 command
 #define DIRECT_PIN_FEATURE

@@ -220,7 +220,7 @@ void USBacmDevice::INDATA()
     }
 }
 
-void USBacmDevice::OUTDATA(uint8_t *data, size_t len)
+void USBacmDevice::OUTDATA(const uint8_t *data, size_t len)
 {
     if (!connected)
         return;

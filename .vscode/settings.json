@@ -13,6 +13,8 @@
         "initializer_list": "cpp",
         "memory": "cpp",
         "random": "cpp",
-        "*.tpp": "cpp"
+        "*.tpp": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp"
     }
 }
