@@ -25,11 +25,13 @@
 #endif //ARDUINO_ARCH_ESP8266
 #if defined(ARDUINO_ARCH_ESP32)
 #include <soc/soc.h>
+#include <soc/rtc_wdt.h>
 #include <soc/rtc_cntl_reg.h>
 #include <WiFi.h>
 #include <esp_task_wdt.h>
 #include <driver/adc.h>
 TaskHandle_t Hal::xHandle = nullptr;
+void rtc_wdt_feed(void);
 #endif //ARDUINO_ARCH_ESP32
 
 #include "esp3doutput.h"
