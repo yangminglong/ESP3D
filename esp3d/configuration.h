@@ -236,7 +236,8 @@
 //ESP_AUTOSTART_SCRIPT : to do some actions / send GCODE at start, need ESP_GCODE_HOST_FEATURE enabled
 //can be  a line od several GCODES separated by `\n` e.g. "M21\nM117 SD mounted\n"
 //can be  a file name, if exists, commands inside will be processed, e.g "/FS:/autostart.esp"
-//#define ESP_AUTOSTART_SCRIPT "M117 Mouning SD\nM21\n"
+//#define ESP_AUTOSTART_SCRIPT "M117 Mounting SD;M21"
+//#define ESP_AUTOSTART_SCRIPT_FILE "autoscript.gco"
 
 //ESP_LUA_INTERPRETER_FEATURE : add lua scripting feature
 //#define ESP_LUA_INTERPRETER_FEATURE
@@ -280,6 +281,13 @@
 
 //Serial rx buffer size is 256 but can be extended
 #define SERIAL_RX_BUFFER_SIZE 512
+
+/************************************
+ *
+ * Benchmark report
+ *
+ * **********************************/
+//#define ESP_BENCHMARK_FEATURE
 
 //Serial need speed up on esp32
 #define SERIAL_INDEPENDANT_TASK
