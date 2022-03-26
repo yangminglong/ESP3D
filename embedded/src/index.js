@@ -268,6 +268,12 @@ function processFWJson(text) {
     consoleContentUpdate(text);
     return;
   }
+  if (!json.status || !json.cmd || !json.data) {
+    ErrorMSG("Wrong version of webUI");
+    consoleContentUpdate(text);
+    return;
+  }
+  json = json.data;
   if (json.FWVersion) {
     let verLink = document.getElementById("verLink");
     verLink.innerHTML = "v" + json.FWVersion;
@@ -287,7 +293,7 @@ function processFWJson(text) {
     window.open(url);
   });
   consolePanel.classList.remove("hide");
-  if (json.Filesystem && json.Filesystem != "None")
+  if (json.FileSystem && json.FileSystem != "none")
     fileSystem.classList.remove("hide");
   if (json.WebUpdate == "Enabled") firmware.classList.remove("hide");
   if (json.WiFiMode && json.WebSocketIP) {
@@ -416,7 +422,7 @@ function InfoMSG(msg) {
 
 function getFWData() {
   let url = new URL("http://" + window.location.host + "/command");
-  url.searchParams.append("cmd", "[ESP800]time=" + getPCTime());
+  url.searchParams.append("cmd", "[ESP800]json=YES time=" + getPCTime());
   httpGet(url, processFWJson);
 }
 

@@ -47,6 +47,18 @@ String & ESP_FileSystem::formatBytes (uint64_t bytes)
     return res;
 }
 
+bool  ESP_FileSystem::accessFS()
+{
+    if (!_started) {
+        _started = begin();
+    }
+    return _started;
+}
+void  ESP_FileSystem::releaseFS()
+{
+    //nothing to do
+}
+
 size_t ESP_FileSystem::max_update_size()
 {
     size_t  flashsize = 0;

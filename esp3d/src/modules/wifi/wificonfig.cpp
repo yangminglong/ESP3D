@@ -147,7 +147,6 @@ bool WiFiConfig::ConnectSTA2AP()
             dot++;
             break;
         }
-        ESP3DGlobalOutput::SetStatus(msg.c_str());
         if (Settings_ESP3D::isVerboseBoot()) {
             output.printMSG(msg.c_str());
             output.flush();
@@ -156,7 +155,6 @@ bool WiFiConfig::ConnectSTA2AP()
         count++;
         status = WiFi.status();
     }
-    ESP3DGlobalOutput::SetStatus("");
     return (status == WL_CONNECTED);
 }
 

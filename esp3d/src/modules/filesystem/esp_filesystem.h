@@ -60,6 +60,7 @@ private:
     String _name;
     size_t _size;
     time_t _lastwrite;
+    uint64_t _timeout;
 };
 
 class ESP_FileSystem
@@ -67,6 +68,8 @@ class ESP_FileSystem
 public:
     static String & formatBytes (uint64_t bytes);
     static bool begin();
+    static bool  accessFS();
+    static void  releaseFS();
     static void end();
     static size_t totalBytes();
     static size_t usedBytes();

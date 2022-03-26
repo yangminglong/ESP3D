@@ -1,3 +1,5 @@
+#if defined __has_include
+#  if __has_include ("../../../configuration.h")
 #include "../../../configuration.h"
 #if defined (DISPLAY_DEVICE) && (DISPLAY_UI_TYPE == UI_TYPE_ADVANCED)
 #include "lvgl.h"
@@ -630,3 +632,6 @@ lv_img_dsc_t esplogo = {
   .data = esplogo_map,
 };
 #endif //defined (DISPLAY_DEVICE) && (DISPLAY_UI_TYPE == UI_TYPE_ADVANCED)
+
+#  endif
+#endif

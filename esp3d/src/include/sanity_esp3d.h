@@ -51,7 +51,7 @@
  * Serial
  * ***********************/
 
-#if !defined(ESP_SERIAL_OUTPUT)
+#if !defined(ESP_SERIAL_OUTPUT) && COMMUNICATION_PROTOCOL!=SOCKET_SERIAL
 #error ESP_SERIAL_OUTPUT must be defined
 #endif
 
