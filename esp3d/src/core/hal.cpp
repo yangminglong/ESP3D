@@ -181,9 +181,8 @@ void Hal::wdtFeed()
 #endif//!defined(DISABLE_WDT_ESP3DLIB_TASK) && !defined(DISABLE_WDT_CORE_0)
 #ifndef DISABLE_WDT_ESP3DLIB_TASK
     if (xHandle && esp_task_wdt_status(xHandle)==ESP_OK) {
-
         if (esp_task_wdt_reset()!=ESP_OK) {
-            log_esp3d("WDT Reset failed")
+            log_esp3d("WDT Reset failed");
         }
     }
 #endif //DISABLE_WDT_ESP3DLIB_TASK

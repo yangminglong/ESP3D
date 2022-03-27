@@ -230,8 +230,8 @@
 //if you do not know what is that then better left it commented
 //#define ESP_ACCESS_CONTROL_ALLOW_ORIGIN
 
-//ESP_GCODE_HOST_FEATURE : allow to send GCODE with ack
-#define ESP_GCODE_HOST_FEATURE
+//GCODE_HOST_FEATURE : allow to send GCODE with ack
+#define GCODE_HOST_FEATURE
 
 //ESP_AUTOSTART_SCRIPT : to do some actions / send GCODE at start, need ESP_GCODE_HOST_FEATURE enabled
 //can be  a line od several GCODES separated by `\n` e.g. "M21\nM117 SD mounted\n"
@@ -309,6 +309,13 @@
 //Using BearSSL need to decrease size of packet to not be OOM on ESP8266
 #define BEARSSL_MFLN_SIZE   512
 #define BEARSSL_MFLN_SIZE_FALLBACK  4096
+
+/************************************
+ *
+ * Disable sanity check
+ *
+ * **********************************/
+//#define ESP_NO_SANITY_CHECK
 
 /************************************
  *
