@@ -53,55 +53,6 @@ void Hal::pinMode(uint8_t pin, uint8_t mode)
     ::pinMode(pin, mode);
 }
 
-#if defined(ARDUINO_ARCH_ESP32)
-int Hal::getAnalogWriteChannel(uint8_t pin)
-{
-    switch (pin) {
-#if CONFIG_IDF_TARGET_ESP32
-    case 39:
-        return ADC1_CHANNEL_3;
-    case 36:
-        return ADC1_CHANNEL_0;
-    case 35:
-        return ADC1_CHANNEL_7;
-    case 34:
-        return ADC1_CHANNEL_6;
-    case 33:
-        return ADC1_CHANNEL_5;
-    case 32:
-        return ADC1_CHANNEL_4;
-    default:
-        return -1;
-#elif CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3
-    case 1:
-        return ADC_CHANNEL_0;
-    case 2:
-        return ADC_CHANNEL_1;
-    case 3:
-        return ADC_CHANNEL_2;
-    case 4:
-        return ADC_CHANNEL_3;
-    case 5:
-        return ADC_CHANNEL_4;
-    case 6:
-        return ADC_CHANNEL_5;
-    case 7:
-        return ADC_CHANNEL_6;
-    case 8:
-        return ADC_CHANNEL_7;
-    case 9:
-        return ADC_CHANNEL_8;
-    case 10:
-        return ADC_CHANNEL_9;
-#else
-#error "ADC1_CHANNEL not defined for this chip"
-	
-#endif
-    }
-    return -1;
-}
-#endif //ARDUINO_ARCH_ESP32
-
 int Hal::analogRead(uint8_t pin)
 {
 #ifdef ARDUINO_ARCH_ESP8266 //only one ADC on ESP8266 A0     
