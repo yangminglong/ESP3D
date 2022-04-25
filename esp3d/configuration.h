@@ -135,7 +135,7 @@
 //ESP_SDIO                    2 //esp32 only
 //ESP_SDFAT                   3 //esp8266  / esp32
 //ESP_SDFAT2                  4 //esp8266  / esp32
-#define SD_DEVICE    ESP_SDFAT2
+//#define SD_DEVICE    ESP_SDFAT2
 
 //SDIO mode
 #define SD_ONE_BIT_MODE true
@@ -144,15 +144,15 @@
 //ESP_NO_SD
 //ESP_DIRECT_SD
 //ESP_SHARED_SD
-#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
+//#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
-//#define ESP_SD_DETECT_PIN       4
+#define ESP_SD_DETECT_PIN       4
 //value expected for ESP_SD_DETECT_PIN (0 or 1)
-#define ESP_SD_DETECT_VALUE      0
+#define ESP_SD_DETECT_VALUE     0
 
-//#define ESP_SD_CS_PIN   5
+#define ESP_SD_CS_PIN   5
 
 //FILESYSTEM_FEATURE: to host some files on flash
 //ESP_SPIFFS_FILESYSTEM       0
