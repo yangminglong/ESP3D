@@ -81,6 +81,9 @@
 //BUZZER_DEVICE: allow to connect passive buzzer
 //#define BUZZER_DEVICE
 
+//Printer has display
+#define HAS_SERIAL_DISPLAY ""
+
 #if defined (DISPLAY_DEVICE)
 //for ILI9143 edit User_Setup.h of TFT_eSPI library
 #if (DISPLAY_DEVICE == OLED_I2C_SSD1306) || (DISPLAY_DEVICE == OLED_I2C_SSDSH1106)
@@ -132,7 +135,7 @@
 //ESP_SDIO                    2 //esp32 only
 //ESP_SDFAT                   3 //esp8266  / esp32
 //ESP_SDFAT2                  4 //esp8266  / esp32
-//#define SD_DEVICE    ESP_SDFAT2
+#define SD_DEVICE    ESP_SDFAT2
 
 //SDIO mode
 #define SD_ONE_BIT_MODE true
@@ -141,7 +144,7 @@
 //ESP_NO_SD
 //ESP_DIRECT_SD
 //ESP_SHARED_SD
-//#define SD_DEVICE_CONNECTION  ESP_DIRECT_SD
+#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
