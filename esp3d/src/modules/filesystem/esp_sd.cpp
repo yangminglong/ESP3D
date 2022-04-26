@@ -62,6 +62,9 @@ bool ESP_SD::_enabled = false;
 
 bool ESP_SD::enableSharedSD()
 {
+    if(_enabled) {
+        return false;
+    }
     _enabled = true;
 #if defined (ESP_FLAG_SHARED_SD_PIN)
     //need to check if SD is in use ?

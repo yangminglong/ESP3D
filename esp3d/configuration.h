@@ -40,7 +40,7 @@
 //COMMUNICATION_PROTOCOL: to communicate with printer or TFT
 //RAW_SERIAL standard serial
 //MKS_SERIAL Mks protocol
-#define COMMUNICATION_PROTOCOL RAW_SERIAL
+#define COMMUNICATION_PROTOCOL MKS_SERIAL
 
 //AUTHENTICATION_FEATURE: protect pages by login password
 //#define AUTHENTICATION_FEATURE
@@ -70,7 +70,14 @@
 //TFT_SPI_ILI9488_480X320 4
 //#define DISPLAY_DEVICE TFT_SPI_ILI9488_480X320
 
-//UI_TYPE_BASIC      1
+//BUZZER_DEVICE: allow to connect passive buzzer
+//#define BUZZER_DEVICE
+
+//Printer has display and can show message using `M117 <Message>`
+#define HAS_SERIAL_DISPLAY ""
+
+#if defined (DISPLAY_DEVICE)
+/UI_TYPE_BASIC      1
 //UI_TYPE_ADVANCED   2
 #define DISPLAY_UI_TYPE UI_TYPE_ADVANCED
 
@@ -78,13 +85,6 @@
 //UI_MONOCHROME      2
 #define DISPLAY_UI_COLOR UI_COLORED
 
-//BUZZER_DEVICE: allow to connect passive buzzer
-//#define BUZZER_DEVICE
-
-//Printer has display
-#define HAS_SERIAL_DISPLAY ""
-
-#if defined (DISPLAY_DEVICE)
 //for ILI9143 edit User_Setup.h of TFT_eSPI library
 #if (DISPLAY_DEVICE == OLED_I2C_SSD1306) || (DISPLAY_DEVICE == OLED_I2C_SSDSH1106)
 #define DISPLAY_I2C_PIN_RST         16 //comment if not applicable
@@ -137,6 +137,8 @@
 //ESP_SDFAT2                  4 //esp8266  / esp32
 //#define SD_DEVICE    ESP_SDFAT2
 
+#if defined(SD_DEVICE)
+
 //SDIO mode
 #define SD_ONE_BIT_MODE true
 
@@ -144,7 +146,7 @@
 //ESP_NO_SD
 //ESP_DIRECT_SD
 //ESP_SHARED_SD
-//#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
+#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
@@ -153,6 +155,7 @@
 #define ESP_SD_DETECT_VALUE     0
 
 #define ESP_SD_CS_PIN   5
+#endif //SD_DEVICE
 
 //FILESYSTEM_FEATURE: to host some files on flash
 //ESP_SPIFFS_FILESYSTEM       0
@@ -258,7 +261,7 @@
 //DEBUG_OUTPUT_SERIAL2 3
 //DEBUG_OUTPUT_TELNET  4
 //DEBUG_OUTPUT_WEBSOCKET  5
-//#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
+//#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_TELNET
 
 #ifdef ESP_DEBUG_FEATURE
 #define DEBUG_BAUDRATE 115200
