@@ -40,7 +40,7 @@
 //COMMUNICATION_PROTOCOL: to communicate with printer or TFT
 //RAW_SERIAL standard serial
 //MKS_SERIAL Mks protocol
-#define COMMUNICATION_PROTOCOL MKS_SERIAL
+#define COMMUNICATION_PROTOCOL RAW_SERIAL
 
 //AUTHENTICATION_FEATURE: protect pages by login password
 //#define AUTHENTICATION_FEATURE
@@ -74,8 +74,9 @@
 //#define BUZZER_DEVICE
 
 //Printer has display and can show message using `M117 <Message>`
-#define HAS_SERIAL_DISPLAY ""
+//#define PRINTER_HAS_DISPLAY
 
+//More configuration  if has connected display
 #if defined (DISPLAY_DEVICE)
 /UI_TYPE_BASIC      1
 //UI_TYPE_ADVANCED   2
@@ -354,5 +355,14 @@
 #undef MDNS_FEATURE
 #undef NOTIFICATION_FEATURE
 #endif
+
+/************************************
+ *
+ * Printer display (M117 support)
+ *
+ * **********************************/
+#if defined(PRINTER_HAS_DISPLAY)
+#define HAS_SERIAL_DISPLAY ""
+#endif //PRINTER_HAS_DISPLAY
 
 #endif //_CONFIGURATION_H
