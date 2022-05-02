@@ -125,6 +125,9 @@ Flash pins (6~11) cannot be used
 * Take screen snapshot
 [ESP216]<SNAP> json=<no> [pwd=<user password>]
 
+* Show defined pins
+[ESP220]<SNAP> json=<no> [pwd=<user password>]
+
 * Play sound  
 No parameter just play beep
 [ESP250]F=<frequency> D=<duration> json=<no> [pwd=<user password>]
