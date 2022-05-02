@@ -149,6 +149,14 @@
 //ESP_SHARED_SD
 #define SD_DEVICE_CONNECTION  ESP_SHARED_SD
 
+
+#if SD_DEVICE_CONNECTION == ESP_SHARED_SD
+//Pin used by multiplexer or hardware switch to select SD device
+#define ESP_FLAG_SHARED_SD_PIN 0
+//value to enable SD device on ESP
+#define ESP_FLAG_SHARED_SD_VALUE 0
+#endif //SD_DEVICE_CONNECTION  ESP_SHARED_SD
+
 //pin if reader has insert detection feature
 //let -1 or comment if none
 #define ESP_SD_DETECT_PIN       4
