@@ -147,7 +147,6 @@ bool WiFiConfig::ConnectSTA2AP()
             dot++;
             break;
         }
-        ESP3DGlobalOutput::SetStatus(msg.c_str());
         if (Settings_ESP3D::isVerboseBoot()) {
             output.printMSG(msg.c_str());
             output.flush();
@@ -156,7 +155,6 @@ bool WiFiConfig::ConnectSTA2AP()
         count++;
         status = WiFi.status();
     }
-    ESP3DGlobalOutput::SetStatus("");
     return (status == WL_CONNECTED);
 }
 
@@ -224,7 +222,7 @@ bool WiFiConfig::StartSTA()
  * Setup and start Access point
  */
 
-bool WiFiConfig::StartAP()
+bool WiFiConfig::StartAP(bool setupMode)
 {
     ESP3DOutput output(ESP_ALL_CLIENTS);
     //Sanity check
@@ -250,27 +248,43 @@ bool WiFiConfig::StartAP()
     int8_t channel = Settings_ESP3D::read_byte (ESP_AP_CHANNEL);
     //IP
     int32_t IP = Settings_ESP3D::read_IP(ESP_AP_IP_VALUE);
+
     IPAddress ip(IP);
+    IPAddress gw(0,0,0,0);
     IPAddress mask(DEFAULT_AP_MASK_VALUE);
-    //Set static IP
+#if defined (ARDUINO_ARCH_ESP8266)
     log_esp3d("Use: %s / %s / %s", ip.toString().c_str(),ip.toString().c_str(),mask.toString().c_str());
-    if (!WiFi.softAPConfig(ip, ip, mask)) {
+    if (!WiFi.softAPConfig(ip, setupMode?ip:gw, mask)) {
         output.printERROR("Set IP to AP failed");
     } else {
         output.printMSG(ip.toString().c_str());
     }
+#endif //ARDUINO_ARCH_ESP8266
     //Start AP
     if(WiFi.softAP(SSID.c_str(), (password.length() > 0)?password.c_str():nullptr, channel)) {
         String stmp = "AP SSID: '" + SSID;
         if (password.length() > 0) {
             stmp +="' is started and protected by password";
         } else {
-            stmp +=" is started not protected by passord";
+            stmp +=" is started not protected by password";
+        }
+        if (setupMode) {
+            stmp += " (setup mode)";
         }
         output.printMSG(stmp.c_str());
         log_esp3d("%s",stmp.c_str());
-        //must be done after starting AP not before
 #if defined (ARDUINO_ARCH_ESP32)
+        //must be done after starting AP not before
+        //https://github.com/espressif/arduino-esp32/issues/4222
+        //on some phone 100 is ok but on some other it is not enough so 2000 is ok
+        Hal::wait(2000);
+        //Set static IP
+        log_esp3d("Use: %s / %s / %s", ip.toString().c_str(),ip.toString().c_str(),mask.toString().c_str());
+        if (!WiFi.softAPConfig(ip, setupMode?ip:gw, mask)) {
+            output.printERROR("Set IP to AP failed");
+        } else {
+            output.printMSG(ip.toString().c_str());
+        }
         WiFi.setSleep(false);
         WiFi.softAPsetHostname(NetConfig::hostname(true));
 #endif //ARDUINO_ARCH_ESP32
@@ -300,9 +314,9 @@ bool WiFiConfig::begin(int8_t & espMode)
         output.printMSG("Starting WiFi");
     }
     int8_t wifiMode = espMode;
-    if (wifiMode == ESP_WIFI_AP) {
+    if (wifiMode == ESP_WIFI_AP || wifiMode == ESP_AP_SETUP) {
         log_esp3d("Starting AP mode");
-        res = StartAP();
+        res = StartAP(wifiMode == ESP_AP_SETUP);
     } else if (wifiMode == ESP_WIFI_STA) {
         log_esp3d("Starting STA");
         res = StartSTA();
@@ -312,9 +326,10 @@ bool WiFiConfig::begin(int8_t & espMode)
                 output.printMSG("Starting fallback mode");
             }
             espMode =  Settings_ESP3D::read_byte(ESP_STA_FALLBACK_MODE);
-            if (espMode == ESP_WIFI_AP) {
-                log_esp3d("Starting AP mode in safe mode");
-                res = StartAP();
+            NetConfig::setMode(espMode);
+            if (espMode == ESP_AP_SETUP) {
+                log_esp3d("Starting AP mode in setup mode");
+                res = StartAP(true);
             } else {
                 //let setup to handle the change
                 res = true;

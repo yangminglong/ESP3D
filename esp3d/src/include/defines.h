@@ -40,8 +40,9 @@
 #define USE_SERIAL_USB 4
 
 //Communication protocols
-#define RAW_SERIAL 0
-#define MKS_SERIAL 1
+#define RAW_SERIAL    0
+#define MKS_SERIAL    1
+#define SOCKET_SERIAL 2
 
 //Display
 #define OLED_I2C_SSD1306        1
@@ -78,6 +79,7 @@
 #define ESP_WIFI_AP    2
 #define ESP_BT         3
 #define ESP_ETH_STA    4
+#define ESP_AP_SETUP   5
 //#define ESP_ETH_SRV  5
 
 //SD mount point
@@ -113,6 +115,7 @@
 #define ESP_EMAIL_NOTIFICATION      2
 #define ESP_LINE_NOTIFICATION       3
 #define ESP_TELEGRAM_NOTIFICATION   4
+#define ESP_IFTTT_NOTIFICATION      5
 
 //SENSOR
 #define NO_SENSOR_DEVICE   0

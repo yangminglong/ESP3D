@@ -30,6 +30,7 @@
 #endif //ARDUINO_ARCH_ESP8266
 #include "http_server.h"
 #include "../authentication/authentication_service.h"
+#include "../network/netconfig.h"
 #include "../../core/settings_esp3d.h"
 #include "../filesystem/esp_filesystem.h"
 #include "../websocket/websocket_server.h"
@@ -55,7 +56,6 @@ void HTTP_Server::init_handlers()
     //need to be there even no authentication to say to UI no authentication
     _webserver->on("/login", HTTP_ANY, handle_login);
 #ifdef FILESYSTEM_FEATURE
-    //FileSystememptyConstChar
     _webserver->on ("/files", HTTP_ANY, handleFSFileList, FSFileupload);
 #endif //FILESYSTEM_FEATURE
 #if COMMUNICATION_PROTOCOL == MKS_SERIAL
@@ -79,7 +79,7 @@ void HTTP_Server::init_handlers()
     }
 #endif //SSDP_FEATURE
 #ifdef CAPTIVE_PORTAL_FEATURE
-    if(WiFi.getMode() == WIFI_AP) {
+    if(NetConfig::getMode() == ESP_AP_SETUP) {
         _webserver->on ("/generate_204", HTTP_ANY,  handle_root);
         _webserver->on ("/gconnectivitycheck.gstatic.com", HTTP_ANY, handle_root);
         //do not forget the / at the end
@@ -241,7 +241,13 @@ void HTTP_Server::handle()
 {
     if (_started) {
         if (_webserver) {
+#ifdef DISABLE_WDT_CORE_0
+            disableCore0WDT();
+#endif //DISABLE_WDT_CORE_0
             _webserver->handleClient();
+#ifdef DISABLE_WDT_CORE_0
+            enableCore0WDT();
+#endif //DISABLE_WDT_CORE_0
         }
     }
 }

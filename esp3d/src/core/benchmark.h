@@ -1,5 +1,5 @@
 /*
-  host_services.h -  host services functions class
+  benchmark_esp3d.h - esp3d benchmark functions
 
   Copyright (c) 2014 Luc Lebosse. All rights reserved.
 
@@ -18,24 +18,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
-
-#ifndef _HOST_SERVICES_H
-#define _HOST_SERVICES_H
-
-
-class HostServices
-{
-public:
-    HostServices();
-    ~HostServices();
-    bool begin();
-    void end();
-    void handle();
-private:
-    bool _started;
-    bool purge_serial();
-};
-
-#endif //_HOST_SERVICES_H
-
+#ifndef _BENCHMARK_ESP3D_H
+#define _BENCHMARK_ESP3D_H
+extern void benchMark(const char* title, uint64_t bench_start,uint64_t bench_end, size_t bench_transfered);
+extern void report_esp3d(const char *format, ...);
+#endif //_BENCHMARK_ESP3D_H 

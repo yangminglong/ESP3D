@@ -24,8 +24,8 @@
 
 //WiFi setup station as default, use AP mode first if not done
 //Note: need both defined to enable it
-#define STATION_WIFI_SSID "XIAOMI"
-#define STATION_WIFI_PASSWORD "ily108108"
+//#define STATION_WIFI_SSID "*********"
+//#define STATION_WIFI_PASSWORD "*********"
 //you can also use a different config file for SSID/password
 //this file is ignored by github
 #if defined __has_include
@@ -58,7 +58,7 @@
 #define HTTP_FEATURE
 
 //TELNET_FEATURE : enable Telnet function
-// #define TELNET_FEATURE
+#define TELNET_FEATURE
 
 //WS_DATA_FEATURE: allow to connect serial from Websocket
 //#define WS_DATA_FEATURE
@@ -67,10 +67,18 @@
 //OLED_I2C_SSD1306          1
 //OLED_I2C_SSDSH1106        2
 //TFT_SPI_ILI9341_320X240   3
-//TFT_SPI_ILI9488_480X320   4
+//TFT_SPI_ILI9488_480X320 4
 //#define DISPLAY_DEVICE TFT_SPI_ILI9488_480X320
 
-//UI_TYPE_BASIC      1
+//BUZZER_DEVICE: allow to connect passive buzzer
+//#define BUZZER_DEVICE
+
+//Printer has display and can show message using `M117 <Message>`
+//#define PRINTER_HAS_DISPLAY
+
+//More configuration  if has connected display
+#if defined (DISPLAY_DEVICE)
+/UI_TYPE_BASIC      1
 //UI_TYPE_ADVANCED   2
 #define DISPLAY_UI_TYPE UI_TYPE_ADVANCED
 
@@ -78,10 +86,6 @@
 //UI_MONOCHROME      2
 #define DISPLAY_UI_COLOR UI_COLORED
 
-//BUZZER_DEVICE: allow to connect passive buzzer
-//#define BUZZER_DEVICE
-
-#if defined (DISPLAY_DEVICE)
 //for ILI9143 edit User_Setup.h of TFT_eSPI library
 #if (DISPLAY_DEVICE == OLED_I2C_SSD1306) || (DISPLAY_DEVICE == OLED_I2C_SSDSH1106)
 #define DISPLAY_I2C_PIN_RST         16 //comment if not applicable
@@ -130,12 +134,11 @@
 //SD_DEVICE: to access SD Card files directly instead of access by serial using printer Board FW
 //ESP_SD_NATIVE               1 //esp32 / esp8266
 //ESP_SDIO                    2 //esp32 only
-//ESP_SDFAT                   3 //esp8266 (same as native) / esp32
-#define SD_DEVICE ESP_SD_NATIVE
+//ESP_SDFAT                   3 //esp8266  / esp32
+//ESP_SDFAT2                  4 //esp8266  / esp32
+//#define SD_DEVICE    ESP_SDFAT2
 
-#if defined(SD_DEVICE) && (SD_DEVICE == ESP_SDFAT2)
-#define SDFAT_FILE_TYPE 3
-#endif
+#if defined(SD_DEVICE)
 
 //SDIO mode
 #define SD_ONE_BIT_MODE true
@@ -144,19 +147,24 @@
 //ESP_NO_SD
 //ESP_DIRECT_SD
 //ESP_SHARED_SD
-#define SD_DEVICE_CONNECTION  ESP_DIRECT_SD
+#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
+
+
+#if SD_DEVICE_CONNECTION == ESP_SHARED_SD
+//Pin used by multiplexer or hardware switch to select SD device
+#define ESP_FLAG_SHARED_SD_PIN 0
+//value to enable SD device on ESP
+#define ESP_FLAG_SHARED_SD_VALUE 0
+#endif //SD_DEVICE_CONNECTION  ESP_SHARED_SD
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
-#define ESP_SD_DETECT_PIN -1
+#define ESP_SD_DETECT_PIN       4
 //value expected for ESP_SD_DETECT_PIN (0 or 1)
-#define ESP_SD_DETECT_VALUE 0
+#define ESP_SD_DETECT_VALUE     0
 
-// #define ESP_SD_SCK_PIN 7
-// #define ESP_SD_MISO_PIN 8
-// #define ESP_SD_MOSI_PIN 9
-
-#define ESP_SD_CS_PIN -1
+#define ESP_SD_CS_PIN   5
+#endif //SD_DEVICE
 
 //FILESYSTEM_FEATURE: to host some files on flash
 //ESP_SPIFFS_FILESYSTEM       0
@@ -165,7 +173,7 @@
 #define FILESYSTEM_FEATURE ESP_LITTLEFS_FILESYSTEM
 
 //Allows to mount /FS and /SD under / for FTP server
-#define GLOBAL_FILESYSTEM_FEATURE
+//#define GLOBAL_FILESYSTEM_FEATURE
 
 //WEBDAV_FEATURE : enable WebDav feature
 //FS_ROOT        mount all FS
@@ -173,26 +181,26 @@
 //FS_SD          mount SD FS
 //FS_USBDISK     mount USB disk FS
 
-// #define WEBDAV_FEATURE  FS_SD
+//#define WEBDAV_FEATURE  FS_FLASH
 
 //FTP_FEATURE : enable FTP feature
 //FS_ROOT        mount all FS
 //FS_FLASH       mount Flash FS
 //FS_SD          mount SD FS
 //FS_USBDISK     mount USB disk FS
-// #define FTP_FEATURE  FS_SD
+//#define FTP_FEATURE  FS_ROOT
 
 //DIRECT_PIN_FEATURE: allow to access pin using ESP201 command
 #define DIRECT_PIN_FEATURE
 
 //TIMESTAMP_FEATURE: set time system
-#define TIMESTAMP_FEATURE
+//#define TIMESTAMP_FEATURE
 
 //FILESYSTEM_TIMESTAMP_FEATURE: display last write time from Flash files
-#define FILESYSTEM_TIMESTAMP_FEATURE
+//#define FILESYSTEM_TIMESTAMP_FEATURE
 
 //FILESYSTEM_TIMESTAMP_FEATURE:display last write time from SD files
-#define SD_TIMESTAMP_FEATURE
+//#define SD_TIMESTAMP_FEATURE
 
 //MDNS_FEATURE: this feature allow  type the name defined
 //in web browser by default: http:\\esp8266.local and connect
@@ -206,13 +214,13 @@
 #define CAPTIVE_PORTAL_FEATURE
 
 //OTA_FEATURE: this feature is arduino update over the air
-#define OTA_FEATURE
+//#define OTA_FEATURE
 
 //WEB_UPDATE_FEATURE: allow to flash fw using web UI
 #define WEB_UPDATE_FEATURE
 
 //SD_UPDATE_FEATURE: allow to flash/configure fw using SD
-#define SD_UPDATE_FEATURE
+//#define SD_UPDATE_FEATURE
 
 //NOTIFICATION_FEATURE : allow to push notifications
 #define NOTIFICATION_FEATURE
@@ -237,13 +245,14 @@
 //if you do not know what is that then better left it commented
 //#define ESP_ACCESS_CONTROL_ALLOW_ORIGIN
 
-//ESP_GCODE_HOST_FEATURE : allow to send GCODE with ack
-#define ESP_GCODE_HOST_FEATURE
+//GCODE_HOST_FEATURE : allow to send GCODE with ack
+#define GCODE_HOST_FEATURE
 
 //ESP_AUTOSTART_SCRIPT : to do some actions / send GCODE at start, need ESP_GCODE_HOST_FEATURE enabled
 //can be  a line od several GCODES separated by `\n` e.g. "M21\nM117 SD mounted\n"
 //can be  a file name, if exists, commands inside will be processed, e.g "/FS:/autostart.esp"
-//#define ESP_AUTOSTART_SCRIPT "M117 Mouning SD\nM21\n"
+//#define ESP_AUTOSTART_SCRIPT "M117 Mounting SD;M21"
+//#define ESP_AUTOSTART_SCRIPT_FILE "autoscript.gco"
 
 //ESP_LUA_INTERPRETER_FEATURE : add lua scripting feature
 //#define ESP_LUA_INTERPRETER_FEATURE
@@ -261,7 +270,7 @@
 //DEBUG_OUTPUT_SERIAL2 3
 //DEBUG_OUTPUT_TELNET  4
 //DEBUG_OUTPUT_WEBSOCKET  5
-#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
+//#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_TELNET
 
 #ifdef ESP_DEBUG_FEATURE
 #define DEBUG_BAUDRATE 115200
@@ -280,14 +289,20 @@
  *
  * **********************************/
 //which serial ESP use to communicate to printer (ESP32 has 3 serials available, ESP8266 only 2)
-//USE_SERIAL_0   for ESP8266/32
-//USE_SERIAL_1   for ESP8266/32
-//USE_SERIAL_2   for ESP32 Only
-//USE_SERIAL_USB for ESP32-S2 Only
-#define ESP_SERIAL_OUTPUT USE_SERIAL_USB
+//USE_SERIAL_0 for ESP8266/32
+//USE_SERIAL_1 for ESP8266/32
+//USE_SERIAL_2 for ESP32 Only
+#define ESP_SERIAL_OUTPUT USE_SERIAL_0
 
 //Serial rx buffer size is 256 but can be extended
 #define SERIAL_RX_BUFFER_SIZE 512
+
+/************************************
+ *
+ * Benchmark report
+ *
+ * **********************************/
+//#define ESP_BENCHMARK_FEATURE
 
 //Serial need speed up on esp32
 #define SERIAL_INDEPENDANT_TASK
@@ -297,9 +312,9 @@
  * Settings
  *
  * **********************************/
-//SETTINGS_IN_EEPROM 1
-//SETTINGS_IN_PREFERENCES 2
-#define ESP_SAVE_SETTINGS SETTINGS_IN_PREFERENCES
+//SETTINGS_IN_EEPROM 0
+//SETTINGS_IN_PREFERENCES 1
+#define ESP_SAVE_SETTINGS SETTINGS_IN_EEPROM
 
 /************************************
  *
@@ -309,6 +324,13 @@
 //Using BearSSL need to decrease size of packet to not be OOM on ESP8266
 #define BEARSSL_MFLN_SIZE   512
 #define BEARSSL_MFLN_SIZE_FALLBACK  4096
+
+/************************************
+ *
+ * Disable sanity check
+ *
+ * **********************************/
+//#define ESP_NO_SANITY_CHECK
 
 /************************************
  *
@@ -341,5 +363,14 @@
 #undef MDNS_FEATURE
 #undef NOTIFICATION_FEATURE
 #endif
+
+/************************************
+ *
+ * Printer display (M117 support)
+ *
+ * **********************************/
+#if defined(PRINTER_HAS_DISPLAY)
+#define HAS_SERIAL_DISPLAY ""
+#endif //PRINTER_HAS_DISPLAY
 
 #endif //_CONFIGURATION_H

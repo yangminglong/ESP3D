@@ -168,6 +168,10 @@ bool esp_lv_touch_read(lv_indev_drv_t * indev, lv_indev_data_t * data)
 }
 #endif //DISPLAY_TOUCH_DRIVER
 
+//TODO : need to change this to a better way
+//just set a bool value to enable calibration
+//add check of this value in handle to do the calibration
+//so it won't be blocking call
 bool Display::startCalibration()
 {
     //TODO add better calibration page with sound and contextual text
@@ -319,6 +323,7 @@ bool Display::display_IP(bool force)
             case ESP_WIFI_STA:
                 s = WiFi.localIP().toString();
                 break;
+            case ESP_AP_SETUP:
             case ESP_WIFI_AP:
                 s = WiFi.softAPIP().toString();
                 break;
@@ -640,7 +645,10 @@ void Display::progress(uint8_t v)
 }
 
 
-
+//TODO : need to change this to a better way
+//just set a bool value to enable snapshot
+//add check of this value in handle to do the snapshot
+//so it won't be blocking call
 bool Display::snapshot(char * filename)
 {
     bool res = false;

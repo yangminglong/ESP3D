@@ -1,5 +1,5 @@
 /*
-sd_native_esp8266.cpp - ESP3D sd support class
+sd_sdfat2_esp32.cpp - ESP3D sd support class
 
   Copyright (c) 2014 Luc Lebosse. All rights reserved.
 
@@ -26,6 +26,16 @@ sd_native_esp8266.cpp - ESP3D sd support class
 #include <SdFat.h>
 #include <sdios.h>
 
+#if SDFAT_FILE_TYPE == 1
+typedef File32 File;
+#elif SDFAT_FILE_TYPE == 2
+typedef ExFile File;
+#elif SDFAT_FILE_TYPE == 3
+typedef FsFile File;
+#else  // SDFAT_FILE_TYPE
+#error Invalid SDFAT_FILE_TYPE
+#endif  // SDFAT_FILE_TYPE
+
 // Try to select the best SD card configuration.
 #if HAS_SDIO_CLASS
 #define SD_CONFIG SdioConfig(FIFO_SDIO)
@@ -35,11 +45,17 @@ sd_native_esp8266.cpp - ESP3D sd support class
 #define SD_CONFIG SdSpiConfig((ESP_SD_CS_PIN == -1)?SS:ESP_SD_CS_PIN, SHARED_SPI)
 #endif  // HAS_SDIO_CLASS
 
-extern FsFile tSDFile_handle[ESP_MAX_SD_OPENHANDLE];
+extern File tSDFile_handle[ESP_MAX_SD_OPENHANDLE];
 
 //Max Freq Working
 #define FREQMZ 40
-SdFs SD;
+SdFat SD;
+#undef FILE_WRITE
+#undef FILE_READ
+#undef FILE_APPEND
+#define FILE_WRITE  (O_RDWR | O_CREAT | O_AT_END)
+#define FILE_READ O_RDONLY
+#define FILE_APPEND (O_RDWR | O_AT_END)
 
 void dateTime (uint16_t* date, uint16_t* dtime)
 {
@@ -51,22 +67,22 @@ void dateTime (uint16_t* date, uint16_t* dtime)
     *dtime = FAT_TIME (tmstruct.tm_hour, tmstruct.tm_min, tmstruct.tm_sec);
 }
 
-time_t getDateTimeFile(FsFile & filehandle)
+time_t getDateTimeFile(File & filehandle)
 {
     static time_t dt = 0;
 #ifdef SD_TIMESTAMP_FEATURE
     struct tm timefile;
     uint16_t date;
     uint16_t time;
-
+    getModifyDateTime(&date, &time)
     if(filehandle) {
         if (filehandle.getModifyDateTime(&date, &time)) {
-            timefile.tm_year = FS_YEAR(date) - 1900;
-            timefile.tm_mon = FS_MONTH(date) - 1;
-            timefile.tm_mday = FS_DAY(date);
-            timefile.tm_hour = FS_HOUR(time);
-            timefile.tm_min = FS_MINUTE(time);
-            timefile.tm_sec = FS_SECOND(time);
+            timefile.tm_year = FAT_YEAR(date) - 1900;
+            timefile.tm_mon = FAT_MONTH(date) - 1;
+            timefile.tm_mday = FAT_DAY(date);
+            timefile.tm_hour = FAT_HOUR(time);
+            timefile.tm_min = FAT_MINUTE(time);
+            timefile.tm_sec = FAT_SECOND(time);
             timefile.tm_isdst = -1;
             dt =  mktime(&timefile);
             if (dt == -1) {
@@ -98,24 +114,18 @@ uint8_t ESP_SD::getState(bool refresh)
     }
     if (!refresh) {
         return _state;  //to avoid refresh=true + busy to reset SD and waste time
+    } else {
+        _sizechanged = true;
     }
     //SD is idle or not detected, let see if still the case
     _state = ESP_SDCARD_NOT_PRESENT;
-    bool isactive = accessSD();
     log_esp3d("Spi : CS: %d,  Miso: %d, Mosi: %d, SCK: %d",ESP_SD_CS_PIN!=-1?ESP_SD_CS_PIN:SS, ESP_SD_MISO_PIN!=-1?ESP_SD_MISO_PIN:MISO, ESP_SD_MOSI_PIN!=-1?ESP_SD_MOSI_PIN:MOSI, ESP_SD_SCK_PIN!=-1?ESP_SD_SCK_PIN:SCK);
     //refresh content if card was removed
-    if (SD.begin((ESP_SD_CS_PIN == -1)?SS:ESP_SD_CS_PIN, SD_SCK_MHZ(FREQMZ/1))) {
+    if (SD.begin((ESP_SD_CS_PIN == -1)?SS:ESP_SD_CS_PIN, SD_SCK_MHZ(FREQMZ/_spi_speed_divider))) {
         csd_t m_csd;
         if (SD.card()->readCSD(&m_csd) && sdCardCapacity(&m_csd) > 0 ) {
             _state = ESP_SDCARD_IDLE;
-        } else {
-            log_esp3d("SD.card()->readCSD faild.");
         }
-    } else {
-        log_esp3d("SD.begin faild.");
-    }
-    if (!isactive) {
-        releaseSD();
     }
     return _state;
 }
@@ -155,42 +165,51 @@ void ESP_SD::end()
     _started = false;
 }
 
-uint64_t ESP_SD::totalBytes()
+void ESP_SD::refreshStats(bool force)
 {
+    if (force || _sizechanged) {
+        usedBytes(true);
+    }
+    _sizechanged = false;
+}
+
+uint64_t ESP_SD::totalBytes(bool refresh)
+{
+    static uint64_t _totalBytes = 0;
     if (!SD.volumeBegin()) {
         return 0;
     }
-    uint64_t volTotal = SD.clusterCount();
-    uint8_t sectors = SD.sectorsPerCluster();
-    return volTotal * sectors * 512;
+    if (refresh || _totalBytes==0) {
+        _totalBytes = SD.clusterCount();
+        uint8_t sectors = SD.sectorsPerCluster();
+        _totalBytes =  _totalBytes * sectors * 512;
+    }
+    return _totalBytes;
 }
 
-uint64_t ESP_SD::usedBytes()
+uint64_t ESP_SD::usedBytes(bool refresh)
 {
-    if(freeBytes() >totalBytes() ) {
-        _sizechanged = true;
+    return totalBytes(refresh) - freeBytes(refresh);
+}
+
+uint64_t ESP_SD::freeBytes(bool refresh)
+{
+    static uint64_t _freeBytes = 0;
+    if (!SD.volumeBegin()) {
+        return 0;
     }
-    return totalBytes() - freeBytes();
+    if (refresh || _freeBytes==0) {
+
+        _freeBytes = SD.freeClusterCount();
+        uint8_t sectors = SD.sectorsPerCluster();
+        _freeBytes = _freeBytes * sectors * 512;
+    }
+    return _freeBytes;
 }
 
 uint ESP_SD::maxPathLength()
 {
     return 255;
-}
-
-uint64_t ESP_SD::freeBytes()
-{
-    static uint64_t volFree;
-    if (!SD.volumeBegin()) {
-        _sizechanged = true;
-        return 0;
-    }
-    if (_sizechanged) {
-        volFree = SD.freeClusterCount();
-        _sizechanged = false;
-    }
-    uint8_t sectors = SD.sectorsPerCluster();
-    return volFree * sectors * 512;
 }
 
 bool ESP_SD::rename(const char *oldpath, const char *newpath)
@@ -282,13 +301,16 @@ bool ESP_SD::format(ESP3DOutput * output)
 
 ESP_SDFile ESP_SD::open(const char* path, uint8_t mode)
 {
+    log_esp3d("open %s, %d", path, mode);
     //do some check
     if(((strcmp(path,"/") == 0) && ((mode == ESP_FILE_WRITE) || (mode == ESP_FILE_APPEND))) || (strlen(path) == 0)) {
         _sizechanged = true;
+        log_esp3d("reject  %s", path);
         return ESP_SDFile();
     }
     // path must start by '/'
     if (path[0] != '/') {
+        log_esp3d("%s is invalid path", path);
         return ESP_SDFile();
     }
     if (mode != ESP_FILE_READ) {
@@ -300,9 +322,15 @@ ESP_SDFile ESP_SD::open(const char* path, uint8_t mode)
             return ESP_SDFile();
         }
     }
-    FsFile tmp = SD.open(path, (mode == ESP_FILE_READ)?FILE_READ:(mode == ESP_FILE_WRITE)?FILE_WRITE:FILE_WRITE);
-    ESP_SDFile esptmp(&tmp, tmp.isDir(),(mode == ESP_FILE_READ)?false:true, path);
-    return esptmp;
+    File tmp = SD.open(path, (mode == ESP_FILE_READ)?FILE_READ:(mode == ESP_FILE_WRITE)?FILE_WRITE:FILE_WRITE);
+    if(tmp) {
+        ESP_SDFile esptmp(&tmp,strcmp(path,"/") == 0?true: tmp.isDir(),(mode == ESP_FILE_READ)?false:true, path);
+        log_esp3d("%s is a %s",strcmp(path,"/") == 0?true: tmp.isDir()?"Dir":"File");
+        return esptmp;
+    } else {
+        log_esp3d("open %s failed", path);
+        return  ESP_SDFile();
+    }
 }
 
 bool ESP_SD::exists(const char* path)
@@ -343,9 +371,9 @@ bool ESP_SD::rmdir(const char *path)
     String p = path;
     pathlist.push(p);
     while (pathlist.count() > 0) {
-        FsFile dir = SD.open(pathlist.getLast().c_str());
+        File dir = SD.open(pathlist.getLast().c_str());
         dir.rewindDirectory();
-        FsFile f = dir.openNextFile();
+        File f = dir.openNextFile();
         bool candelete = true;
         while (f) {
             if (f.isDir()) {
@@ -356,7 +384,7 @@ bool ESP_SD::rmdir(const char *path)
                 newdir = tmp;
                 pathlist.push(newdir);
                 f.close();
-                f = FsFile();
+                f = File();
             } else {
                 char tmp[255];
                 f.getName(tmp,254);
@@ -383,7 +411,7 @@ void ESP_SD::closeAll()
 {
     for (uint8_t i = 0; i < ESP_MAX_SD_OPENHANDLE; i++) {
         tSDFile_handle[i].close();
-        tSDFile_handle[i] = FsFile();
+        tSDFile_handle[i] = File();
     }
 }
 
@@ -411,7 +439,7 @@ ESP_SDFile::ESP_SDFile(void* handle, bool isdir, bool iswritemode, const char * 
     bool set =false;
     for (uint8_t i=0; (i < ESP_MAX_SD_OPENHANDLE) && !set; i++) {
         if (!tSDFile_handle[i]) {
-            tSDFile_handle[i] = *((FsFile*)handle);
+            tSDFile_handle[i] = *((File*)handle);
             //filename
             char tmp[255];
             tSDFile_handle[i].getName(tmp,254);
@@ -443,7 +471,7 @@ ESP_SDFile::ESP_SDFile(void* handle, bool isdir, bool iswritemode, const char * 
                 _lastwrite = 0;
             }
             _index = i;
-            //log_esp3d("Opening FsFile at index %d",_index);
+            //log_esp3d("Opening File at index %d",_index);
             set = true;
         }
     }
@@ -451,35 +479,41 @@ ESP_SDFile::ESP_SDFile(void* handle, bool isdir, bool iswritemode, const char * 
 //todo need also to add short filename
 const char* ESP_SDFile::shortname() const
 {
-    // static char sname[13];
-    // FsFile ftmp = SD.open(_filename.c_str());
-    // if (ftmp) {
-    //     ftmp.getSFN(sname);
-    //     ftmp.close();
-    //     return sname;
-    // } else {
-    //     return _name.c_str();
-    // }
+#if SDFAT_FILE_TYPE != 1
     return _name.c_str();
+#else
+    static char sname[13];
+    File ftmp = SD.open(_filename.c_str());
+    if (ftmp) {
+        ftmp.getSFN(sname,12);
+        ftmp.close();
+        if(strlen(sname)==0) {
+            return _name.c_str();
+        }
+        return sname;
+    } else {
+        return _name.c_str();
+    }
+#endif
 }
 
 void ESP_SDFile::close()
 {
     if (_index != -1) {
-        //log_esp3d("Closing FsFile at index %d", _index);
+        //log_esp3d("Closing File at index %d", _index);
         tSDFile_handle[_index].close();
         //reopen if mode = write
         //udate size + date
         if (_iswritemode && !_isdir) {
-            FsFile ftmp = SD.open(_filename.c_str());
+            File ftmp = SD.open(_filename.c_str());
             if (ftmp) {
                 _size = ftmp.size();
                 _lastwrite = getDateTimeFile(ftmp);
                 ftmp.close();
             }
         }
-        tSDFile_handle[_index] = FsFile();
-        //log_esp3d("Closing FsFile at index %d",_index);
+        tSDFile_handle[_index] = File();
+        //log_esp3d("Closing File at index %d",_index);
         _index = -1;
     }
 }
@@ -490,7 +524,7 @@ ESP_SDFile  ESP_SDFile::openNextFile()
         log_esp3d("openNextFile failed");
         return ESP_SDFile();
     }
-    FsFile tmp = tSDFile_handle[_index].openNextFile();
+    File tmp = tSDFile_handle[_index].openNextFile();
     if (tmp) {
         char tmps[255];
         tmp.getName(tmps,254);
