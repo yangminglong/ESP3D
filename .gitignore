@@ -11,4 +11,3 @@ embedded/dist
 .vscode/launch.json
 .vscode/arduino.json
 esp3d/myconfig.h
-.vscode

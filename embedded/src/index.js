@@ -30,7 +30,7 @@ let wsMsg = "";
 let logOff = false;
 let pageId = "";
 let currentPath = "/";
-const version = "3.0.0.a3";
+const version = "3.0.0.a4";
 let xmlhttpupload;
 let prgfiletext;
 let prgfile;
@@ -268,6 +268,12 @@ function processFWJson(text) {
     consoleContentUpdate(text);
     return;
   }
+  if (!json.status || !json.cmd || !json.data) {
+    ErrorMSG("Wrong version of webUI");
+    consoleContentUpdate(text);
+    return;
+  }
+  json = json.data;
   if (json.FWVersion) {
     let verLink = document.getElementById("verLink");
     verLink.innerHTML = "v" + json.FWVersion;
@@ -287,7 +293,7 @@ function processFWJson(text) {
     window.open(url);
   });
   consolePanel.classList.remove("hide");
-  if (json.Filesystem && json.Filesystem != "None")
+  if (json.FileSystem && json.FileSystem != "none")
     fileSystem.classList.remove("hide");
   if (json.WebUpdate == "Enabled") firmware.classList.remove("hide");
   if (json.WiFiMode && json.WebSocketIP) {
@@ -304,7 +310,7 @@ function processFWJson(text) {
     }
   }
   if (json.Hostname) document.title = json.Hostname;
-  startSocket(json.WebSocketIP, json.WebSocketport, json.WebCommunication);
+  startSocket(json.WebSocketIP, json.WebSocketPort, json.WebCommunication);
   SendFileCommand("list", "all");
 }
 
@@ -416,7 +422,7 @@ function InfoMSG(msg) {
 
 function getFWData() {
   let url = new URL("http://" + window.location.host + "/command");
-  url.searchParams.append("cmd", "[ESP800]time=" + getPCTime());
+  url.searchParams.append("cmd", "[ESP800]json=YES time=" + getPCTime());
   httpGet(url, processFWJson);
 }
 
@@ -491,8 +497,8 @@ function dispatchFileStatus(jsonresponse) {
       console.log("newpath:" + newPath);
       content +=
         "<div class='fileLine'>" +
-        "<div class='fileLineHead'>"+
-          "<div class='filetype'>"+
+        "<div class='fileLineHead'>" +
+        "<div class='filetype'>" +
         backIcon() +
         "</div><div class='fileitem' id='updir'> Up..</div></div></div>";
       eventslisteners.push({ action: "updir", id: "updir", target: newPath });
@@ -501,8 +507,8 @@ function dispatchFileStatus(jsonresponse) {
       if (String(json.files[i1].size) == "-1") {
         content +=
           "<div class='fileLine'>" +
-          "<div class='fileLineHead'>"+
-          "<div class='filetype'>"+
+          "<div class='fileLineHead'>" +
+          "<div class='filetype'>" +
           dirIcon() +
           "</div><div class='fileitem' id='Dir" +
           i1 +
@@ -536,8 +542,8 @@ function dispatchFileStatus(jsonresponse) {
         }
         content +=
           "<div class='fileLine' >" +
-          "<div class='fileLineHead'>"+
-          "<div class='filetype'>"+
+          "<div class='fileLineHead'>" +
+          "<div class='filetype'>" +
           fileIcon() +
           "</div><div class='fileitem'  id='File" +
           i1 +

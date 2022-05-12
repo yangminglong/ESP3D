@@ -84,7 +84,7 @@ app.get("/config", function (req, res) {
 app.get("/command", function (req, res) {
   console.log(commandcolor(`[server]/command params: ${req.query.cmd}`));
   let url = req.query.cmd;
-  if (url.startsWith("[ESP800]")) {
+  if (url.startsWith("[ESP800]json")) {
     res.json({
       FWVersion: "3.0.0.a28",
       FWTarget: 40,
@@ -92,7 +92,7 @@ app.get("/command", function (req, res) {
       Authentication: "Disabled",
       WebCommunication: "Synchronous",
       WebSocketIP: "localhost",
-      WebSocketport: "81",
+      WebSocketPort: "81",
       Hostname: "esp3d",
       WiFiMode: "STA",
       WebUpdate: "Enabled",
