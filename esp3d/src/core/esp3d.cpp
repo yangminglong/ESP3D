@@ -122,6 +122,9 @@ bool Esp3D::begin()
         if (!NetConfig::begin()) {
             log_esp3d("Error setup network");
             res = false;
+        } else {
+            String ip = WiFi.localIP().toString();
+            log_esp3d("IP:%s\n",ip.c_str());
         }
     }
 

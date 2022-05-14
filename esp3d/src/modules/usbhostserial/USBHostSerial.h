@@ -3,8 +3,6 @@
 
 #include "esp32-hal-uart.h"
 #include "Stream.h"
-#include "usb_acm.hpp"
-#include "usb_host.hpp"
 
 class USBHostSerial : public Stream
 {
@@ -24,6 +22,7 @@ public:
     {
       return read((uint8_t*) buffer, size);
     }
+    virtual size_t readBytes(uint8_t *buffer, size_t length);
 
     void flush(void);
     void flush( bool txOnly);
@@ -63,6 +62,7 @@ public:
     size_t setRxBufferSize(size_t new_size);
 
 private:
+    size_t m_bufferSize;
 };
 
 extern USBHostSerial SerialUSB;
