@@ -131,6 +131,8 @@
 //ESP_SD_NATIVE               1 //esp32 / esp8266
 //ESP_SDIO                    2 //esp32 only
 //ESP_SDFAT                   3 //esp8266 (same as native) / esp32
+//ESP_SDFAT2                  4 //esp8266  / esp32
+
 #define SD_DEVICE ESP_SD_NATIVE
 
 #if defined(SD_DEVICE) && (SD_DEVICE == ESP_SDFAT2)
