@@ -1,0 +1,23 @@
+{
+  "name": "EspUsbLib",
+  "keywords": "CDC",
+  "description": "for Arduino, ESP8266",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/yangminglong/EspUsbLib.git"
+  },
+  "authors":
+  [
+    {
+      "name": "yangminglong",
+      "email": "yml0305@live.com",
+      "url": "https://github.com/yangminglong",
+      "maintainer": true
+    }
+  ],
+  "version": "1.0.0",
+  "frameworks": "arduino",
+  "platforms": "*",
+  "headers": ["cp210x_usb.hpp", "ftdi_usb.hpp", "include/usb/cdc_acm_host.h", "include/usb/usb_types_cdc.h"]
+}
