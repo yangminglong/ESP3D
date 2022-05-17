@@ -1,17 +1,14 @@
 #ifndef _USB_HOST_SERIAL_H
 #define _USB_HOST_SERIAL_H
 
-#include "esp32-hal-uart.h"
-#include "Stream.h"
-#include "usb_acm.hpp"
-#include "usb_host.hpp"
+#include <Arduino.h>
 
 class USBHostSerial : public Stream
 {
 
 public:
     USBHostSerial();
-
+    void setup();
     bool begin(unsigned long baud = 250000);
     void end();
     void updateBaudRate(unsigned long baud);

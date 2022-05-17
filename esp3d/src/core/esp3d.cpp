@@ -57,6 +57,10 @@
 #include "esp3doutput.h"
 #include "../modules/boot_delay/boot_delay.h"
 
+#if ESP_SERIAL_OUTPUT == USE_SERIAL_USB
+#include "../modules/usbhostserial/USBHostSerial.h"
+#endif //USE_SERIAL_2
+
 
 bool Esp3D::restart = false;
 
@@ -110,6 +114,10 @@ bool Esp3D::begin()
     //BT do not start automaticaly so should be OK
 #if COMMUNICATION_PROTOCOL == RAW_SERIAL || COMMUNICATION_PROTOCOL == MKS_SERIAL
     //Serial service
+    #if ESP_SERIAL_OUTPUT == USE_SERIAL_USB
+    SerialUSB.setup();
+    #endif
+
     if (!serial_service.begin()) {
         log_esp3d("Error with serial service");
         res = false;

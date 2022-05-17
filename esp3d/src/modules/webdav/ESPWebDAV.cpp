@@ -833,9 +833,9 @@ void ESPWebDAVCore::handleGet(ResourceType resource, WebDavFile& file, bool isGe
 
     // no lock on GET
 
-#if defined(ESP_DEBUG_FEATURE)
+// #if defined(ESP_DEBUG_FEATURE)
     long tStart = millis();
-#endif
+// #endif
 
     size_t fileSize = file.size();
     String contentType = contentTypeFn(uri);
@@ -963,9 +963,9 @@ void ESPWebDAVCore::handlePut(ResourceType resource)
 
     if (contentLengthHeader != 0) {
         uint8_t buf[BUFFER_SIZE];
-#if defined(ESP_DEBUG_FEATURE)
+// #if defined(ESP_DEBUG_FEATURE)
         long tStart = millis();
-#endif
+// #endif
         size_t numRemaining = contentLengthHeader;
 
         if (transferStatusFn) {

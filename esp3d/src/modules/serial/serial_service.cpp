@@ -113,12 +113,14 @@ bool SerialService::begin()
             br = Settings_ESP3D::get_default_int32_value(ESP_BAUD_RATE);
         }
         ESP3D_SERIAL.setRxBufferSize (SERIAL_RX_BUFFER_SIZE);
+
 #ifdef ARDUINO_ARCH_ESP8266
         ESP3D_SERIAL.begin(br, ESP_SERIAL_PARAM, SERIAL_FULL, (ESP_TX_PIN == -1)?1:ESP_TX_PIN);
 #if ESP_RX_PIN != -1
         ESP3D_SERIAL.pins((ESP_TX_PIN == -1)?1:ESP_TX_PIN, ESP_RX_PIN)
 #endif //ESP_RX_PIN != -1
 #endif //ARDUINO_ARCH_ESP8266
+
 #if defined(ARDUINO_ARCH_ESP32)
 #if ESP_SERIAL_OUTPUT == USE_SERIAL_USB
     ESP3D_SERIAL.begin (br);
@@ -143,6 +145,7 @@ bool SerialService::begin()
             return false;
         }
 #endif //SERIAL_INDEPENDANT_TASK
+
 #endif //ARDUINO_ARCH_ESP32
     }
     _started = true;

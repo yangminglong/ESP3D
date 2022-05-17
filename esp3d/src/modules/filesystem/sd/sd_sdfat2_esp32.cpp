@@ -103,7 +103,9 @@ uint8_t ESP_SD::getState(bool refresh)
 {
 #if defined(ESP_SD_DETECT_PIN) && ESP_SD_DETECT_PIN != -1
     //no need to go further if SD detect is not correct
-    if (!((digitalRead (ESP_SD_DETECT_PIN) == ESP_SD_DETECT_VALUE) ? true : false)) {
+    bool isCorrect = digitalRead (ESP_SD_DETECT_PIN) == ESP_SD_DETECT_VALUE;
+    if (isCorrect) {
+        log_esp3d("SD detect is not correct.");
         _state = ESP_SDCARD_NOT_PRESENT;
         return _state;
     }
@@ -123,10 +125,22 @@ uint8_t ESP_SD::getState(bool refresh)
     //refresh content if card was removed
     if (SD.begin((ESP_SD_CS_PIN == -1)?SS:ESP_SD_CS_PIN, SD_SCK_MHZ(FREQMZ/_spi_speed_divider))) {
         csd_t m_csd;
-        if (SD.card()->readCSD(&m_csd) && sdCardCapacity(&m_csd) > 0 ) {
+        if ( SD.card()->readCSD(&m_csd) ) {
+          if (sdCardCapacity(&m_csd) > 0) {
             _state = ESP_SDCARD_IDLE;
+          } else {
+            log_esp3d("sdCard capacity is empty.");
+          }
+        } else {
+          log_esp3d("Read sd card's CSD register faild.");
         }
+    } else {
+      log_esp3d("SD begin faild.");
     }
+
+    if (_state == ESP_SDCARD_NOT_PRESENT)
+      log_esp3d("SD card not present.");
+
     return _state;
 }
 
@@ -156,6 +170,7 @@ bool ESP_SD::begin()
     digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
 #endif //ESP_FLAG_SHARED_SD_PIN
 #endif //SD_DEVICE_CONNECTION  == ESP_SHARED_SD
+    log_esp3d("sd_sdfat2_esp32 ESP_SD has begin.");
     return _started;
 }
 
@@ -324,8 +339,9 @@ ESP_SDFile ESP_SD::open(const char* path, uint8_t mode)
     }
     File tmp = SD.open(path, (mode == ESP_FILE_READ)?FILE_READ:(mode == ESP_FILE_WRITE)?FILE_WRITE:FILE_WRITE);
     if(tmp) {
-        ESP_SDFile esptmp(&tmp,strcmp(path,"/") == 0?true: tmp.isDir(),(mode == ESP_FILE_READ)?false:true, path);
-        log_esp3d("%s is a %s",strcmp(path,"/") == 0?true: tmp.isDir()?"Dir":"File");
+        ESP_SDFile esptmp(&tmp, strcmp(path,"/") == 0?true: tmp.isDir(), (mode == ESP_FILE_READ)?false:true, path);
+        
+        log_esp3d("%s is a %s", path, ((strcmp(path,"/") == 0?true: tmp.isDir())?"Dir":"File"));
         return esptmp;
     } else {
         log_esp3d("open %s failed", path);

@@ -136,7 +136,7 @@
 //ESP_SDIO                    2 //esp32 only
 //ESP_SDFAT                   3 //esp8266  / esp32
 //ESP_SDFAT2                  4 //esp8266  / esp32
-//#define SD_DEVICE    ESP_SDFAT2
+#define SD_DEVICE    ESP_SDFAT2
 
 #if defined(SD_DEVICE)
 
@@ -159,11 +159,15 @@
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
-#define ESP_SD_DETECT_PIN       4
+#define ESP_SD_DETECT_PIN       33
 //value expected for ESP_SD_DETECT_PIN (0 or 1)
 #define ESP_SD_DETECT_VALUE     0
 
-#define ESP_SD_CS_PIN   5
+// #define ESP_SD_CS_PIN   34
+// #define ESP_SD_MISO_PIN 37
+// #define ESP_SD_MOSI_PIN 35
+// #define ESP_SD_SCK_PIN  36
+
 #endif //SD_DEVICE
 
 //FILESYSTEM_FEATURE: to host some files on flash
@@ -173,7 +177,7 @@
 #define FILESYSTEM_FEATURE ESP_LITTLEFS_FILESYSTEM
 
 //Allows to mount /FS and /SD under / for FTP server
-//#define GLOBAL_FILESYSTEM_FEATURE
+#define GLOBAL_FILESYSTEM_FEATURE
 
 //WEBDAV_FEATURE : enable WebDav feature
 //FS_ROOT        mount all FS
@@ -181,14 +185,14 @@
 //FS_SD          mount SD FS
 //FS_USBDISK     mount USB disk FS
 
-//#define WEBDAV_FEATURE  FS_FLASH
+#define WEBDAV_FEATURE  FS_SD
 
 //FTP_FEATURE : enable FTP feature
 //FS_ROOT        mount all FS
 //FS_FLASH       mount Flash FS
 //FS_SD          mount SD FS
 //FS_USBDISK     mount USB disk FS
-//#define FTP_FEATURE  FS_ROOT
+// #define FTP_FEATURE  FS_ROOT
 
 //DIRECT_PIN_FEATURE: allow to access pin using ESP201 command
 #define DIRECT_PIN_FEATURE
@@ -270,7 +274,7 @@
 //DEBUG_OUTPUT_SERIAL2 3
 //DEBUG_OUTPUT_TELNET  4
 //DEBUG_OUTPUT_WEBSOCKET  5
-//#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_TELNET
+#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
 
 #ifdef ESP_DEBUG_FEATURE
 #define DEBUG_BAUDRATE 115200
@@ -292,7 +296,8 @@
 //USE_SERIAL_0 for ESP8266/32
 //USE_SERIAL_1 for ESP8266/32
 //USE_SERIAL_2 for ESP32 Only
-#define ESP_SERIAL_OUTPUT USE_SERIAL_0
+//USE_SERIAL_USB for ESP32-s2/ESP32-s3
+#define ESP_SERIAL_OUTPUT USE_SERIAL_USB
 
 //Serial rx buffer size is 256 but can be extended
 #define SERIAL_RX_BUFFER_SIZE 512
@@ -305,7 +310,9 @@
 //#define ESP_BENCHMARK_FEATURE
 
 //Serial need speed up on esp32
+#if (ESP_SERIAL_OUTPUT != USE_SERIAL_USB)
 #define SERIAL_INDEPENDANT_TASK
+#endif
 
 /************************************
  *

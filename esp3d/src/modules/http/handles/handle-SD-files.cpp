@@ -62,10 +62,11 @@ void HTTP_Server::handleSDFileList ()
 
     if (ESP_SD::getState(true) == ESP_SDCARD_NOT_PRESENT)  {
         _webserver->send (200, "text/plain", "{\"status\":\"no SD card\"}");
-        log_esp3d("Release Sd called");
+        log_esp3d("Release Sd called, sd card not present.");
         ESP_SD::releaseFS();
         return;
     }
+    
     ESP_SD::setState(ESP_SDCARD_BUSY );
 
     //get current path
@@ -232,7 +233,7 @@ void HTTP_Server::handleSDFileList ()
     _webserver->sendContent_P(buffer2send.c_str(),buffer2send.length());
     _webserver->sendContent("");
     _upload_status = UPLOAD_STATUS_NONE;
-    log_esp3d("Release Sd called");
+    log_esp3d("finished, Release Sd called");
     ESP_SD::releaseFS();
 }
 
