@@ -7,7 +7,7 @@
 * Raw TCP / serial bridge support (light telnet)
 * Boot delay configuration
 * Websocket / serial bridge support
-* BT Serial support (when supported)
+* Bluetooth Serial bridge support (when BT supported)
 * MKS Serial protocol support
 * Serial commands configurations
 * Authentication support (admin / user)
@@ -31,8 +31,8 @@
       * MKS fast upload by serial
       * NOT SUPPORTED
         * M28/M29 File transfer protocol
-    * USB support
-        * planned
+* USB support
+    * planned
 * Global FS under FTP / Webdav : SD + Local FS in same directory
 * Buzzer support
 * Recovery pin support
