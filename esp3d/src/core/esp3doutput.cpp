@@ -141,9 +141,8 @@ void ESP3DOutput::toScreen(uint8_t output_type, const char * s)
 #ifdef DISPLAY_DEVICE
         switch(atoi(s)) {
         case ESP_STATE_DISCONNECTED:
-            esp3d_display.SetStatus(F("Disconnected"));
-            break;
             esp3d_display.SetStatus("Disconnected");
+            break;
         default :
             break;
         }

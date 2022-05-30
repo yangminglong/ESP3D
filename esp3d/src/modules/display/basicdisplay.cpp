@@ -617,7 +617,7 @@ void Display::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t c
 #endif //#if DISPLAY_DEVICE == OLED_I2C_SSD1306 || DISPLAY_DEVICE == OLED_I2C_SSDSH1106
 #if (DISPLAY_DEVICE == TFT_SPI_ILI9341_320X240) || (DISPLAY_DEVICE == TFT_SPI_ILI9488_480X320)
     esp3d_screen.drawLine(x0, y0, x1, y1, color);
-#endif (DISPLAY_DEVICE == TFT_SPI_ILI9341_320X240) || (DISPLAY_DEVICE == TFT_SPI_ILI9488_480X320)
+#endif //(DISPLAY_DEVICE == TFT_SPI_ILI9341_320X240) || (DISPLAY_DEVICE == TFT_SPI_ILI9488_480X320)
 }
 
 // Draw the border of a rectangle at the given location
