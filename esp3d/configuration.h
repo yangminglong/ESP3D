@@ -68,7 +68,7 @@
 //OLED_I2C_SSDSH1106        2
 //TFT_SPI_ILI9341_320X240   3
 //TFT_SPI_ILI9488_480X320 4
-//#define DISPLAY_DEVICE TFT_SPI_ILI9488_480X320
+//#define DISPLAY_DEVICE OLED_I2C_SSD1306
 
 //BUZZER_DEVICE: allow to connect passive buzzer
 //#define BUZZER_DEVICE
@@ -78,7 +78,7 @@
 
 //More configuration  if has connected display
 #if defined (DISPLAY_DEVICE)
-/UI_TYPE_BASIC      1
+//UI_TYPE_BASIC      1
 //UI_TYPE_ADVANCED   2
 #define DISPLAY_UI_TYPE UI_TYPE_ADVANCED
 
