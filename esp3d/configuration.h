@@ -64,13 +64,13 @@
 //#define WS_DATA_FEATURE
 
 //DISPLAY_DEVICE: allow screen output
-//OLED_I2C_SSD1306          1
-//OLED_I2C_SSDSH1106        2 //not done
+//OLED_I2C_SSD1306_128X64   1
+//OLED_I2C_SSDSH1106_132X64 2
 //TFT_SPI_ILI9341_320X240   3 //not done
 //TFT_SPI_ILI9488_480X320   4 //not done
-#define DISPLAY_DEVICE OLED_I2C_SSD1306_128X64
-//#define DISPLAY_I2C_PIN_RST         16 //comment if not applicable
+//#define DISPLAY_DEVICE OLED_I2C_SSDSH1106_132X64
 //#define DISPLAY_I2C_ADDR            0x3c
+//#define DISPLAY_I2C_PIN_RST         16 //comment if not applicable
 //#define DISPLAY_FLIP_VERTICALY      1
 //#define DISPLAY_TOUCH_DRIVER        XPT2046_SPI
 //#define DISPLAY_LED_PIN             27  //-1 if none
