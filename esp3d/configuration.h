@@ -68,10 +68,12 @@
 //OLED_I2C_SSDSH1106_132X64 2
 //TFT_SPI_ILI9341_320X240   3 //not done
 //TFT_SPI_ILI9488_480X320   4 //not done
-//#define DISPLAY_DEVICE OLED_I2C_SSDSH1106_132X64
+//TFT_SPI_ST7789_240X240    5 //not done
+//TFT_SPI_ST7789_135X240    6
+#define DISPLAY_DEVICE TFT_SPI_ST7789_135X240
 //#define DISPLAY_I2C_ADDR            0x3c
 //#define DISPLAY_I2C_PIN_RST         16 //comment if not applicable
-//#define DISPLAY_FLIP_VERTICALY      1
+#define DISPLAY_FLIP_VERTICALY      1
 //#define DISPLAY_TOUCH_DRIVER        XPT2046_SPI
 //#define DISPLAY_LED_PIN             27  //-1 if none
 

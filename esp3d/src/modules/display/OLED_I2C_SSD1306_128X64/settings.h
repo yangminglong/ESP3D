@@ -42,12 +42,12 @@
 #define FONTSTATUS   2
 
 //Positions
-#define SIGNAL_X 128-27
+#define SIGNAL_X SCREEN_WIDTH-27
 #define SIGNAL_Y 0
 #define SIGNAL_W 46
-#define SIGNAL_H 10
+#define SIGNAL_H 12
 
-#define SIGNAL_ICON_X 128-43
+#define SIGNAL_ICON_X SCREEN_WIDTH-43
 #define SIGNAL_ICON_Y 2
 #define SIGNAL_ICON_W 15
 #define SIGNAL_ICON_H 10
@@ -61,10 +61,10 @@
 
 #define IP_AREA_X 0
 #define IP_AREA_Y 16
-#define IP_AREA_W 128
+#define IP_AREA_W SCREEN_WIDTH
 #define IP_AREA_H 16
 
 #define STATUS_AREA_X 0
-#define STATUS_AREA_Y 48
-#define STATUS_AREA_W 128
+#define STATUS_AREA_Y SCREEN_HEIGHT-16
+#define STATUS_AREA_W SCREEN_WIDTH
 #define STATUS_AREA_H 16
