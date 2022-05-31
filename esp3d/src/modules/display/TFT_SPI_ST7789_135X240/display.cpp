@@ -369,12 +369,12 @@ void Display::progress(uint8_t v)
     static uint8_t previous = 0;
     if (previous > v) {
         //clear
-        fillRect(10, _screenHeight-2, _screenWidth-20, 2, SCREEN_BG);
+        fillRect(10, _screenHeight-4, _screenWidth-20, 4, SCREEN_BG);
     }
     log_esp3d("%d", v);
     previous = v>100?100:v;
     //display bar
-    drawRect(10, _screenHeight-2, ((_screenWidth-20) * v)/100, 2, PROGRESS_FG);
+    fillRect(10, _screenHeight-4, ((_screenWidth-20) * v)/100, 4, PROGRESS_FG);
     //update screen
     updateScreen(true);
 }
