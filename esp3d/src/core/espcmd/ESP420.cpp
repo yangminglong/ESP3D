@@ -884,7 +884,7 @@ bool Commands::ESP420(const char* cmd_params, level_authenticate_type auth_type,
                         } else {
                             line +=": ";
                         }
-                        line+=WiFiConfig::getSignal(WiFi.RSSI());
+                        line+=WiFiConfig::getSignal(WiFi.RSSI(), false);
                         line+="%";
                         if (json) {
                             line +="\"}";

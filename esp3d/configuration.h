@@ -65,38 +65,21 @@
 
 //DISPLAY_DEVICE: allow screen output
 //OLED_I2C_SSD1306          1
-//OLED_I2C_SSDSH1106        2
-//TFT_SPI_ILI9341_320X240   3
-//TFT_SPI_ILI9488_480X320 4
-//#define DISPLAY_DEVICE OLED_I2C_SSD1306
+//OLED_I2C_SSDSH1106        2 //not done
+//TFT_SPI_ILI9341_320X240   3 //not done
+//TFT_SPI_ILI9488_480X320   4 //not done
+#define DISPLAY_DEVICE OLED_I2C_SSD1306_128X64
+//#define DISPLAY_I2C_PIN_RST         16 //comment if not applicable
+//#define DISPLAY_I2C_ADDR            0x3c
+//#define DISPLAY_FLIP_VERTICALY      1
+//#define DISPLAY_TOUCH_DRIVER        XPT2046_SPI
+//#define DISPLAY_LED_PIN             27  //-1 if none
 
 //BUZZER_DEVICE: allow to connect passive buzzer
 //#define BUZZER_DEVICE
 
 //Printer has display and can show message using `M117 <Message>`
 //#define PRINTER_HAS_DISPLAY
-
-//More configuration  if has connected display
-#if defined (DISPLAY_DEVICE)
-//UI_TYPE_BASIC      1
-//UI_TYPE_ADVANCED   2
-#define DISPLAY_UI_TYPE UI_TYPE_ADVANCED
-
-//UI_COLORED         1
-//UI_MONOCHROME      2
-#define DISPLAY_UI_COLOR UI_COLORED
-
-//for ILI9143 edit User_Setup.h of TFT_eSPI library
-#if (DISPLAY_DEVICE == OLED_I2C_SSD1306) || (DISPLAY_DEVICE == OLED_I2C_SSDSH1106)
-#define DISPLAY_I2C_PIN_RST         16 //comment if not applicable
-#define DISPLAY_I2C_ADDR            0x3c
-#endif //(DISPLAY_DEVICE == OLED_I2C_SSD1306) || (DISPLAY_DEVICE == OLED_I2C_SSDSH1106)
-#define DISPLAY_FLIP_VERTICALY      1 //comment to disable
-#if (DISPLAY_DEVICE == TFT_SPI_ILI9341_320X240) || (DISPLAY_DEVICE == TFT_SPI_ILI9488_480X320)
-#define DISPLAY_TOUCH_DRIVER        XPT2046_SPI
-#define DISPLAY_LED_PIN             27  //-1 if none
-#endif //(DISPLAY_DEVICE == TFT_SPI_ILI9341_320X240) || (DISPLAY_DEVICE == TFT_SPI_ILI9488_480X320)
-#endif //DISPLAY_DEVICE
 
 //INPUT_DEVICE: allow input
 //ROTARY_ENCODER        1
@@ -270,7 +253,7 @@
 //DEBUG_OUTPUT_SERIAL2 3
 //DEBUG_OUTPUT_TELNET  4
 //DEBUG_OUTPUT_WEBSOCKET  5
-//#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_TELNET
+//#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
 
 #ifdef ESP_DEBUG_FEATURE
 #define DEBUG_BAUDRATE 115200

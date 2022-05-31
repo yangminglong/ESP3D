@@ -9,7 +9,7 @@ cd $GITHUB_WORKSPACE
 cp -r ./libraries/ESP32SSDP-1.2.0 $HOME/arduino_ide/libraries/
 cp -r ./libraries/arduinoWebSockets-2.3.6 $HOME/arduino_ide/libraries/
 cp -r ./libraries/DHT_sensor_library_for_ESPx-1.0.6 $HOME/arduino_ide/libraries/
-cp -r ./libraries/esp8266-oled-ssd1306-4.0.0 $HOME/arduino_ide/libraries/
+cp -r ./libraries/esp8266-oled-ssd1306-4.3.0 $HOME/arduino_ide/libraries/
 cp -r ./libraries/TFT_eSPI-1.4.11 $HOME/arduino_ide/libraries/
 cp -r ./libraries/lv_arduino-2.0.3 $HOME/arduino_ide/libraries/
 cp -r ./libraries/ESP8266-Arduino-Lua-0.0.30 $HOME/arduino_ide/libraries/
