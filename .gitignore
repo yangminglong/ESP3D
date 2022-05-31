@@ -8,3 +8,4 @@ embedded/dist
 .piolibdeps
 .vscode
 esp3d/myconfig.h
+.vscode/extensions.json
