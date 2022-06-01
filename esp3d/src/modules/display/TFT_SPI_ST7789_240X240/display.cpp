@@ -19,7 +19,7 @@
 */
 
 #include "../../../include/esp3d_config.h"
-#if defined (DISPLAY_DEVICE) && DISPLAY_DEVICE == TFT_SPI_ST7789_135X240
+#if defined (DISPLAY_DEVICE) && DISPLAY_DEVICE == TFT_SPI_ST7789_240X240
 
 #include "../display.h"
 #include "../../../core/settings_esp3d.h"
@@ -140,7 +140,7 @@ void Display::handle()
 
 const char * Display::getModelString()
 {
-    return "TFT_SPI_ST7789_135X240";
+    return "TFT_SPI_ST7789_240X240";
 }
 
 uint8_t Display::getModelID()

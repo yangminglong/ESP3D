@@ -20,7 +20,7 @@
 
 //Screen size
 #define SCREEN_WIDTH    240
-#define SCREEN_HEIGHT   135
+#define SCREEN_HEIGHT   240
 
 //Colors
 #define COLOR_BLACK   TFT_BLACK

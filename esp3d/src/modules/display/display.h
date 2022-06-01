@@ -39,6 +39,8 @@ public:
     void progress(uint8_t v);
     void setStatus(const char * status);
     void updateIP();
+    const char * getModelString();
+    uint8_t getModelID();
 #if defined(DISPLAY_TOUCH_DRIVER)
     bool startCalibration();
 #endif //DISPLAY_TOUCH_DRIVER
