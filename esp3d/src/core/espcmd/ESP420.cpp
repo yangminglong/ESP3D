@@ -73,6 +73,9 @@
 #ifdef SD_DEVICE
 #include "../../modules/filesystem/esp_sd.h"
 #endif //SD_DEVICE
+#if defined (DISPLAY_DEVICE)
+#include "../../modules/display/display.h"
+#endif //DISPLAY_DEVICE
 #define COMMANDID   420
 
 //Get ESP current status
@@ -605,8 +608,29 @@ bool Commands::ESP420(const char* cmd_params, level_authenticate_type auth_type,
                 }
                 line="";
             }
-#endif //CAMERA_DEVICE
 
+
+
+#endif //CAMERA_DEVICE
+#if defined (DISPLAY_DEVICE)
+            if (json) {
+                line +=",{\"id\":\"";
+            }
+            line +="display";
+            if (json) {
+                line +="\",\"value\":\"";
+            } else {
+                line +=": ";
+            }
+            line+=esp3d_display.getModelString();
+            if (json) {
+                line +="\"}";
+                output->print (line.c_str());
+            } else {
+                output->printMSGLine(line.c_str());
+            }
+            line="";
+#endif //DISPLAY_DEVICE
 #if defined (BLUETOOTH_FEATURE)
             if (bt_service.started()) {
                 //BT mode

@@ -18,8 +18,6 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <SSD1306Wire.h>
-
 //Screen size
 #define SCREEN_WIDTH    132
 #define SCREEN_HEIGHT   64

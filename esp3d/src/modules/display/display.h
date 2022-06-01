@@ -39,6 +39,8 @@ public:
     void progress(uint8_t v);
     void setStatus(const char * status);
     void updateIP();
+    const char * getModelString();
+    uint8_t getModelID();
 #if defined(DISPLAY_TOUCH_DRIVER)
     bool startCalibration();
 #endif //DISPLAY_TOUCH_DRIVER
@@ -62,6 +64,7 @@ private:
     void drawXbm(int16_t x, int16_t y, int16_t width, int16_t height, int16_t color, const uint8_t *xbm);
     void drawXbm(int16_t x, int16_t y, int16_t width, int16_t height, uint16_t fgcolor, uint16_t bgcolor, const uint8_t *xbm);
     uint16_t getStringWidth(const char* text);
+    uint8_t _font;
     String _status;
 };
 

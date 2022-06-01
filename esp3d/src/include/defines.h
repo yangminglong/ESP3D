@@ -50,6 +50,7 @@
 #define TFT_SPI_ILI9341_320X240        3
 #define TFT_SPI_ILI9488_480X320        4
 #define TFT_SPI_ST7789_240X240         5
+#define TFT_SPI_ST7789_135X240         6
 
 //UI type for display
 #define UI_TYPE_BASIC      1

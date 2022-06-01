@@ -142,6 +142,16 @@ void Display::handle()
     }
 }
 
+const char * Display::getModelString()
+{
+    return "OLED_I2C_SSD1306_128X64";
+}
+
+uint8_t Display::getModelID()
+{
+    return DISPLAY_DEVICE;
+}
+
 /**
  * Display the screen with the given screenID
  *

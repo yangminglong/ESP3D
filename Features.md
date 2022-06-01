@@ -38,11 +38,16 @@
 * Recovery pin support
 * ESP32 Camera support
 * Basic oled screen support
+    * I2C SSD1306 128x64
+    * I2C SSDSH1106 132x64
 * Basic tft screen support
+    * SPI ST7789 135x240
+    * SPI ST7789 240x240
 * Time synchronization support (manual / internet server)
 * Lua interpreter support
 * Notifications support
     * WebUI
+    * TFT/OLED
     * Email
     * Line
     * Telegram
