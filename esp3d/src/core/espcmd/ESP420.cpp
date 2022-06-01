@@ -616,8 +616,7 @@ bool Commands::ESP420(const char* cmd_params, level_authenticate_type auth_type,
             if (json) {
                 line +=",{\"id\":\"";
             }
-            line +="d-p
-            isplay";
+            line +="display";
             if (json) {
                 line +="\",\"value\":\"";
             } else {
