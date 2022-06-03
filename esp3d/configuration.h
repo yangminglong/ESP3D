@@ -131,7 +131,7 @@
 //ESP_NO_SD
 //ESP_DIRECT_SD
 //ESP_SHARED_SD
-#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
+#define SD_DEVICE_CONNECTION  ESP_DIRECT_SD
 
 
 #if SD_DEVICE_CONNECTION == ESP_SHARED_SD
@@ -143,7 +143,7 @@
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
-#define ESP_SD_DETECT_PIN       33
+// #define ESP_SD_DETECT_PIN       33
 //value expected for ESP_SD_DETECT_PIN (0 or 1)
 #define ESP_SD_DETECT_VALUE     0
 
@@ -283,7 +283,7 @@
 //USE_SERIAL_1 for ESP8266/32
 //USE_SERIAL_2 for ESP32 Only
 //USE_SERIAL_USB for ESP32-s2/ESP32-s3
-#define ESP_SERIAL_OUTPUT USE_SERIAL_USB
+#define ESP_SERIAL_OUTPUT USE_SERIAL_0
 
 //Serial rx buffer size is 256 but can be extended
 #define SERIAL_RX_BUFFER_SIZE 512
