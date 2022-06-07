@@ -171,6 +171,8 @@
 
 #define WEBDAV_FEATURE  FS_SD
 
+#define WEBDAV_ASYNC 1
+
 //FTP_FEATURE : enable FTP feature
 //FS_ROOT        mount all FS
 //FS_FLASH       mount Flash FS
