@@ -36,7 +36,7 @@
 * Global FS under FTP / Webdav : SD + Local FS in same directory
 * Buzzer support
 * Recovery pin support
-* ESP32 Camera support
+* ESP32 Camera support (only with PSRAM)
 * Basic oled screen support
     * I2C SSD1306 128x64
     * I2C SSDSH1106 132x64
@@ -59,5 +59,10 @@
     * BMX280
 * Auto script support at start
 * Basic Host GCODE stream for macros hosted on local FS
+* Update
+    * ESP3D configuration using ini file on SD
+    * ESP3D update using binary file on SD
+
+    *
 
 

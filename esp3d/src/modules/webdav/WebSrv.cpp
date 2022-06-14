@@ -113,7 +113,7 @@ String ESPWebDAV::urlDecode(const String& text)
 void ESPWebDAV::handleClient()
 {
     if (!server) {
-        //log_esp3d("handleClient: server is null");
+        log_esp3d("handleClient: server is null");
         return;
     }
 

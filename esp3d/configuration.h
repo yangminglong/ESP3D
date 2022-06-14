@@ -124,6 +124,8 @@
 
 #if defined(SD_DEVICE)
 
+#if defined(SD_DEVICE)
+
 //SDIO mode
 #define SD_ONE_BIT_MODE true
 
@@ -131,7 +133,7 @@
 //ESP_NO_SD
 //ESP_DIRECT_SD
 //ESP_SHARED_SD
-#define SD_DEVICE_CONNECTION  ESP_DIRECT_SD
+#define SD_DEVICE_CONNECTION  ESP_SHARED_SD
 
 
 #if SD_DEVICE_CONNECTION == ESP_SHARED_SD
@@ -143,6 +145,7 @@
 
 //pin if reader has insert detection feature
 //let -1 or comment if none
+
 // #define ESP_SD_DETECT_PIN       33
 //value expected for ESP_SD_DETECT_PIN (0 or 1)
 #define ESP_SD_DETECT_VALUE     0
@@ -151,6 +154,7 @@
 // #define ESP_SD_MISO_PIN 37
 // #define ESP_SD_MOSI_PIN 35
 // #define ESP_SD_SCK_PIN  36
+
 
 #endif //SD_DEVICE
 
@@ -184,13 +188,13 @@
 #define DIRECT_PIN_FEATURE
 
 //TIMESTAMP_FEATURE: set time system
-//#define TIMESTAMP_FEATURE
+#define TIMESTAMP_FEATURE
 
 //FILESYSTEM_TIMESTAMP_FEATURE: display last write time from Flash files
 //#define FILESYSTEM_TIMESTAMP_FEATURE
 
 //FILESYSTEM_TIMESTAMP_FEATURE:display last write time from SD files
-//#define SD_TIMESTAMP_FEATURE
+#define SD_TIMESTAMP_FEATURE
 
 //MDNS_FEATURE: this feature allow  type the name defined
 //in web browser by default: http:\\esp8266.local and connect
@@ -215,17 +219,24 @@
 //NOTIFICATION_FEATURE : allow to push notifications
 #define NOTIFICATION_FEATURE
 
-//CAMERA_DEVICE: Enable the support of connected camera
+//CAMERA_DEVICE: Enable the support of connected camera (Only Camera with PSRAM are supported)
 //CAMERA_MODEL_CUSTOM           0 //Edit the pins in include/pins.h
 //CAMERA_MODEL_ESP_EYE          1
 //CAMERA_MODEL_M5STACK_PSRAM    2
-//CAMERA_MODEL_M5STACK_WIDE     3
-//CAMERA_MODEL_AI_THINKER       4 e.g. used by ESP32-CAM
-//CAMERA_MODEL_WROVER_KIT       5
+//CAMERA_MODEL_M5STACK_V2_PSRAM 3
+//CAMERA_MODEL_M5STACK_WIDE     4
+//CAMERA_MODEL_AI_THINKER       7  e.g. used by ESP32-CAM
+//CAMERA_MODEL_WROVER_KIT       8
+//CAMERA_MODEL_ESP32_CAM_BOARD 10
+//CAMERA_MODEL_ESP32S2_CAM_BOARD 11
+//CAMERA_MODEL_ESP32S3_CAM_LCD   12
+//CAMERA_MODEL_ESP32S3_EYE       13
 //#define CAMERA_DEVICE CAMERA_MODEL_AI_THINKER
+
+//#define USE_BOARD_HEADER 1 //CAMERA_MODEL_ESP32_CAM_BOARD /CAMERA_MODEL_ESP32S2_CAM_BOARD
 //#define CAMERA_DEVICE_FLIP_VERTICALY  //comment to disable
 //#define CAMERA_DEVICE_FLIP_HORIZONTALY//comment to disable
-#define CUSTOM_CAMERA_NAME "ESP32-CAM"
+//#define CUSTOM_CAMERA_NAME "ESP32-CAM"
 
 
 //Allow remote access by enabling cross origin access
@@ -326,6 +337,20 @@
  *
  * **********************************/
 //#define ESP_NO_SANITY_CHECK
+
+/************************************
+ *
+ * Target Firmware (default is UNKNOWN_FW)
+ *
+ * **********************************/
+//UNKNOWN_FW      0
+//GRBL            10
+//MARLIN          20
+//SMOOTHIEWARE    40
+//REPETIER        50
+///REPRAP         70
+
+//#define DEFAULT_FW UNKNOWN_FW
 
 /************************************
  *

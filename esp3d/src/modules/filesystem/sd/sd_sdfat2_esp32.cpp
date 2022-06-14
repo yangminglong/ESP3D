@@ -137,10 +137,6 @@ uint8_t ESP_SD::getState(bool refresh)
     } else {
       log_esp3d("SD begin faild.");
     }
-
-    if (_state == ESP_SDCARD_NOT_PRESENT)
-      log_esp3d("SD card not present.");
-
     return _state;
 }
 
@@ -339,9 +335,8 @@ ESP_SDFile ESP_SD::open(const char* path, uint8_t mode)
     }
     File tmp = SD.open(path, (mode == ESP_FILE_READ)?FILE_READ:(mode == ESP_FILE_WRITE)?FILE_WRITE:FILE_WRITE);
     if(tmp) {
-        ESP_SDFile esptmp(&tmp, strcmp(path,"/") == 0?true: tmp.isDir(), (mode == ESP_FILE_READ)?false:true, path);
-        
-        log_esp3d("%s is a %s", path, ((strcmp(path,"/") == 0?true: tmp.isDir())?"Dir":"File"));
+        ESP_SDFile esptmp(&tmp,strcmp(path,"/") == 0?true: tmp.isDir(),(mode == ESP_FILE_READ)?false:true, path);
+        log_esp3d("%s is a %s",strcmp(path,"/") == 0?true: tmp.isDir()?"Dir":"File");
         return esptmp;
     } else {
         log_esp3d("open %s failed", path);

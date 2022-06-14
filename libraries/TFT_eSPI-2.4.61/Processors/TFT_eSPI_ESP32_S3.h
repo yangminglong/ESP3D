@@ -4,8 +4,8 @@
 
 // Temporarily a separate file to TFT_eSPI_ESP32.h until board package low level API stabilises
 
-#ifndef _TFT_eSPI_ESP32_S3_H_
-#define _TFT_eSPI_ESP32_S3_H_
+#ifndef _TFT_eSPI_ESP32H_
+#define _TFT_eSPI_ESP32H_
 
 #if !defined(DISABLE_ALL_LIBRARY_WARNINGS)
  #warning >>>>------>> DMA is not supported on the ESP32 S3 (possible future update)

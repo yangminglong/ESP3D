@@ -73,7 +73,7 @@ void TFT_eSPI::begin_SDA_Read(void)
 {
   pinMatrixOutDetach(TFT_MOSI, false, false);
   pinMode(TFT_MOSI, INPUT);
-  pinMatrixInAttach(TFT_MOSI, SPIQ_IN_IDX, false);
+  pinMatrixInAttach(TFT_MOSI, VSPIQ_IN_IDX, false);
   SET_BUS_READ_MODE;
 }
 
@@ -84,9 +84,9 @@ void TFT_eSPI::begin_SDA_Read(void)
 void TFT_eSPI::end_SDA_Read(void)
 {
   pinMode(TFT_MOSI, OUTPUT);
-  pinMatrixOutAttach(TFT_MOSI, SPID_OUT_IDX, false, false);
+  pinMatrixOutAttach(TFT_MOSI, VSPID_OUT_IDX, false, false);
   pinMode(TFT_MISO, INPUT);
-  pinMatrixInAttach(TFT_MISO, SPIQ_IN_IDX, false);
+  pinMatrixInAttach(TFT_MISO, VSPIQ_IN_IDX, false);
   SET_BUS_WRITE_MODE;
 }
 ////////////////////////////////////////////////////////////////////////////////////////
