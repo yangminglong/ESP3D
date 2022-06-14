@@ -9,3 +9,4 @@ embedded/dist
 .vscode
 esp3d/myconfig.h
 .vscode/extensions.json
+esp3d.ino.cpp
