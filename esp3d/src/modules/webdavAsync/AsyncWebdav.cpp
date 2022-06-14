@@ -1,3 +1,5 @@
+#include "../../include/esp3d_config.h"
+
 #if defined (WEBDAV_FEATURE)
 
 #include <Arduino.h>

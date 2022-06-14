@@ -29,8 +29,8 @@ class WiFiServer;
 class AsyncWebdav_Server
 {
 public:
-    Webdav_Server();
-    ~Webdav_Server();
+    AsyncWebdav_Server();
+    ~AsyncWebdav_Server();
     bool begin();
     void end();
     void handle();
@@ -45,6 +45,7 @@ public:
     void closeClient();
 private:
     bool _started;
+    uint16_t _port;
     
     AsyncWebServer _server;
     AsyncWebdav _dav;
