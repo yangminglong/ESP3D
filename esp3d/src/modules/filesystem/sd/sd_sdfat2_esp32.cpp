@@ -74,15 +74,24 @@ time_t getDateTimeFile(File & filehandle)
     struct tm timefile;
     uint16_t date;
     uint16_t time;
-    getModifyDateTime(&date, &time)
+    //getModifyDateTime(&date, &time);
     if(filehandle) {
         if (filehandle.getModifyDateTime(&date, &time)) {
+          #if SD_DEVICE == SDFAT
             timefile.tm_year = FAT_YEAR(date) - 1900;
             timefile.tm_mon = FAT_MONTH(date) - 1;
             timefile.tm_mday = FAT_DAY(date);
             timefile.tm_hour = FAT_HOUR(time);
             timefile.tm_min = FAT_MINUTE(time);
             timefile.tm_sec = FAT_SECOND(time);
+          #else
+            timefile.tm_year = FS_YEAR(date) - 1900;
+            timefile.tm_mon  = FS_MONTH(date) - 1;
+            timefile.tm_mday = FS_DAY(date);
+            timefile.tm_hour = FS_HOUR(time);
+            timefile.tm_min  = FS_MINUTE(time);
+            timefile.tm_sec  = FS_SECOND(time);
+          #endif
             timefile.tm_isdst = -1;
             dt =  mktime(&timefile);
             if (dt == -1) {
@@ -336,7 +345,7 @@ ESP_SDFile ESP_SD::open(const char* path, uint8_t mode)
     File tmp = SD.open(path, (mode == ESP_FILE_READ)?FILE_READ:(mode == ESP_FILE_WRITE)?FILE_WRITE:FILE_WRITE);
     if(tmp) {
         ESP_SDFile esptmp(&tmp,strcmp(path,"/") == 0?true: tmp.isDir(),(mode == ESP_FILE_READ)?false:true, path);
-        log_esp3d("%s is a %s",strcmp(path,"/") == 0?true: tmp.isDir()?"Dir":"File");
+        log_esp3d("%s is a %s", path, (strcmp(path,"/") == 0 ? true: tmp.isDir() )?"Dir":"File");
         return esptmp;
     } else {
         log_esp3d("open %s failed", path);

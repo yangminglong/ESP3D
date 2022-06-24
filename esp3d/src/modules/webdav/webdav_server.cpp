@@ -20,7 +20,7 @@
 
 #include "../../include/esp3d_config.h"
 
-#if defined (WEBDAV_FEATURE)
+#if defined (WEBDAV_FEATURE) && !WEBDAV_ASYNC
 #include <WiFiServer.h>
 #include <WiFiClient.h>
 #include "webdav_server.h"

@@ -19,7 +19,7 @@
 */
 #include "../../include/esp3d_config.h"
 
-#if defined (WEBDAV_FEATURE)
+#if defined (WEBDAV_FEATURE) && WEBDAV_ASYNC
 #include <WiFiServer.h>
 #include <WiFiClient.h>
 #include "AsyncWebdav_Server.h"
@@ -65,6 +65,7 @@ const char* AsyncWebdav_Server::clientIPAddress()
 
 AsyncWebdav_Server::AsyncWebdav_Server()
     :_server(0)
+    // , _dav(String(), FILESYSTEM)
 {
     _started = false;
     // _port = 0;

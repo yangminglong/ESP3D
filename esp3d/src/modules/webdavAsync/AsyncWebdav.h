@@ -1,9 +1,6 @@
 #ifndef __ESPASYNCWEBDAV_H
 #define __ESPASYNCWEBDAV_H
 
-#include "../../include/esp3d_config.h"
-
-
 #include <Arduino.h>
 #include <FS.h>
 #include <ESPAsyncWebServer.h>

@@ -264,4 +264,7 @@
 #define FS_UNKNOWN     254
 #define MAX_FS 3
 
+#define WEBDAV_ASYNC 0
+
+
 #endif //_DEFINES_ESP3D_H

@@ -54,10 +54,11 @@
 #endif //FP_FEATURE
 #ifdef WEBDAV_FEATURE
 #if WEBDAV_ASYNC
-#include "../modules/webdavAsync/webdav_server.h"
+#include "../webdavAsync/webdav_server.h"
 #else
-#include "../modules/webdav/webdav_server.h"
-#endif#endif //WEBDAV_FEATURE
+#include "../webdav/webdav_server.h"
+#endif
+#endif //WEBDAV_FEATURE
 #ifdef HTTP_FEATURE
 #include "../http/http_server.h"
 #endif //HTTP_FEATURE

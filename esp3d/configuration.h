@@ -124,8 +124,6 @@
 
 #if defined(SD_DEVICE)
 
-#if defined(SD_DEVICE)
-
 //SDIO mode
 #define SD_ONE_BIT_MODE true
 
@@ -162,7 +160,7 @@
 //ESP_SPIFFS_FILESYSTEM       0
 //ESP_FAT_FILESYSTEM          1
 //ESP_LITTLEFS_FILESYSTEM     2
-#define FILESYSTEM_FEATURE ESP_LITTLEFS_FILESYSTEM
+#define FILESYSTEM_FEATURE ESP_FAT_FILESYSTEM
 
 //Allows to mount /FS and /SD under / for FTP server
 #define GLOBAL_FILESYSTEM_FEATURE
@@ -174,8 +172,6 @@
 //FS_USBDISK     mount USB disk FS
 
 #define WEBDAV_FEATURE  FS_SD
-
-#define WEBDAV_ASYNC 1
 
 //FTP_FEATURE : enable FTP feature
 //FS_ROOT        mount all FS
@@ -296,7 +292,7 @@
 //USE_SERIAL_1 for ESP8266/32
 //USE_SERIAL_2 for ESP32 Only
 //USE_SERIAL_USB for ESP32-s2/ESP32-s3
-#define ESP_SERIAL_OUTPUT USE_SERIAL_0
+#define ESP_SERIAL_OUTPUT USE_SERIAL_1
 
 //Serial rx buffer size is 256 but can be extended
 #define SERIAL_RX_BUFFER_SIZE 512
@@ -361,10 +357,12 @@
 #define ESP_MODEL_NAME "ESP8266"
 #define ESP_MODEL_URL "http://espressif.com/en/products/esp8266/"
 #endif //ARDUINO_ARCH_ESP8266
+
 #if defined( ARDUINO_ARCH_ESP32)
 #define ESP_MODEL_NAME "ESP32"
 #define ESP_MODEL_URL "https://www.espressif.com/en/products/hardware/esp-wroom-32/overview"
 #endif //ARDUINO_ARCH_ESP32
+
 #define ESP_MODEL_NUMBER "ESP3D 3.0"
 #define ESP_MANUFACTURER_NAME "Espressif Systems"
 #define ESP_MANUFACTURER_URL "http://espressif.com"

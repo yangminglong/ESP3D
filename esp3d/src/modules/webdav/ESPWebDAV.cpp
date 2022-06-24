@@ -30,7 +30,8 @@
 //#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
 #include "../../include/esp3d_config.h"
 
-#if defined (WEBDAV_FEATURE)
+#if defined (WEBDAV_FEATURE) && !WEBDAV_ASYNC
+
 #include <time.h>
 #include "ESPWebDAV.h"
 
