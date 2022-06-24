@@ -19,7 +19,6 @@
 */
 #include "sdkconfig.h"
 #include "src/core/esp3d.h"
-
 //global variable
 Esp3D myesp3d;
 

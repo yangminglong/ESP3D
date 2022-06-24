@@ -74,7 +74,7 @@ time_t getDateTimeFile(File & filehandle)
     struct tm timefile;
     uint16_t date;
     uint16_t time;
-    //getModifyDateTime(&date, &time);
+
     if(filehandle) {
         if (filehandle.getModifyDateTime(&date, &time)) {
           #if SD_DEVICE == SDFAT
