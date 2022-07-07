@@ -126,7 +126,7 @@
 #define USE_SERIAL_0   1
 #define USE_SERIAL_1   2
 #define USE_SERIAL_2   3
-#define USE_SERIAL_USB 6 // 与 DEBUG_OUTPUT_比较
+#define USE_SERIAL_USB 255 // 与 DEBUG_OUTPUT_比较
 
 //Communication protocols
 #define RAW_SERIAL    0
@@ -268,7 +268,6 @@
 #define FS_UNKNOWN     254
 #define MAX_FS 3
 
-#define WEBDAV_ASYNC 0
 
 
 #endif //_DEFINES_ESP3D_H

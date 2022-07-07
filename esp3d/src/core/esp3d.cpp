@@ -59,7 +59,7 @@
 
 #if ESP_SERIAL_OUTPUT == USE_SERIAL_USB
 #include "../modules/usbhostserial/USBHostSerial.h"
-#endif //USE_SERIAL_2
+#endif //USE_SERIAL_USB
 
 
 bool Esp3D::restart = false;

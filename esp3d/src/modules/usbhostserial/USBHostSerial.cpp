@@ -37,19 +37,20 @@ static void handle_rx(uint8_t *data, size_t data_len, void *arg)
 
 static void handle_event(const cdc_acm_host_dev_event_data_t *event, void *user_ctx)
 {
-    switch (event->type) {
-        case CDC_ACM_HOST_ERROR:
-            ESP_LOGE(TAG, "CDC-ACM error has occurred, err_no = %d", event->data.error);
-            break;
-        case CDC_ACM_HOST_DEVICE_DISCONNECTED:
-            ESP_LOGI(TAG, "Device suddenly disconnected");
-            break;
-        case CDC_ACM_HOST_SERIAL_STATE:
-            ESP_LOGI(TAG, "serial state notif 0x%04X", event->data.serial_state.val);
-            break;
-        case CDC_ACM_HOST_NETWORK_CONNECTION:
-        default: break;
-    }
+  switch (event->type) 
+  {
+      case CDC_ACM_HOST_ERROR:
+          ESP_LOGE(TAG, "CDC-ACM error has occurred, err_no = %d", event->data.error);
+          break;
+      case CDC_ACM_HOST_DEVICE_DISCONNECTED:
+          ESP_LOGI(TAG, "Device suddenly disconnected");
+          break;
+      case CDC_ACM_HOST_SERIAL_STATE:
+          ESP_LOGI(TAG, "serial state notif 0x%04X", event->data.serial_state.val);
+          break;
+      case CDC_ACM_HOST_NETWORK_CONNECTION:
+      default: break;
+  }
 }
 
 bool isRunTask = false;

@@ -55,8 +55,9 @@
 * USE_SERIAL_0 //for ESP8266/32, also used by bootloader output, so consider to make it quiet
 * USE_SERIAL_1 //for ESP8266/32
 * USE_SERIAL_2 //for ESP32 Only
+* USE_SERIAL_USB //for ESP32-S2/ESP32-S3 Only
 */
-#define ESP_SERIAL_OUTPUT USE_SERIAL_0
+#define ESP_SERIAL_OUTPUT USE_SERIAL_USB
 
 /* Serial buffer size
 *  Maximum size of the serial buffer
@@ -231,7 +232,7 @@
 * ESP_SHARED_SD //Printer SD Card is also connected to ESP3D
 * Does your system has SD card and how it is connected to your ESP3D
 */
-//#define SD_DEVICE_CONNECTION ESP_DIRECT_SD
+#define SD_DEVICE_CONNECTION ESP_SHARED_SD
 
 /* SD card library
 * ESP_SD_NATIVE //esp32 / esp8266
@@ -239,7 +240,7 @@
 * ESP_SDFAT     //esp8266  / esp32
 * ESP_SDFAT2    //esp8266  / esp32
 */
-//#define SD_DEVICE ESP_SDFAT2
+#define SD_DEVICE ESP_SDFAT2
 
 /* Sdio bit mode
 * Mode used by SDIO library 1 bit / 4bits
@@ -303,7 +304,9 @@
 * FS_FLASH       //mount Flash FS
 * FS_SD          mount SD FS
 */
-//#define WEBDAV_FEATURE FS_ROOT
+#define WEBDAV_FEATURE FS_SD
+
+// #define WEBDAV_ASYNC 0
 
 /* FTP access
 * Use FTP to access to your filesystem (1 connection only)

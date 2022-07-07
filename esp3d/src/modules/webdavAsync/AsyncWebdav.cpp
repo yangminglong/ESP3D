@@ -1,6 +1,6 @@
 #include "../../include/esp3d_config.h"
 
-#if defined (WEBDAV_FEATURE) && WEBDAV_ASYNC
+#if defined(WEBDAV_FEATURE) && WEBDAV_ASYNC==1
 
 #include <Arduino.h>
 #include <FS.h>
