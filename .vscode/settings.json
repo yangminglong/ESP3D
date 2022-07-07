@@ -2,12 +2,8 @@
     "git.ignoreLimitWarning": true,
     "files.associations": {
         "*.tcc": "cpp",
-        "fstream": "cpp",
-        "deque": "cpp",
-        "string": "cpp",
-        "unordered_map": "cpp",
-        "unordered_set": "cpp",
-        "vector": "cpp",
-        "system_error": "cpp"
-    }
+
+        "fstream": "cpp"
+    },
+    "cmake.configureOnOpen": false
 }
