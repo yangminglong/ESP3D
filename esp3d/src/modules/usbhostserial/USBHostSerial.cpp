@@ -32,24 +32,32 @@ static const char *TAG = "USB-VCP";
 
 static void handle_rx(uint8_t *data, size_t data_len, void *arg)
 {
-    printf("%.*s", data_len, data);
+  // printf("%.*s", data_len, data);
+  for (int i = 0 ; i < data_len; ++i) {
+    buffer.push(data[i]);
+  }
+
+  // 是否需要释放 data
 }
 
 static void handle_event(const cdc_acm_host_dev_event_data_t *event, void *user_ctx)
 {
   switch (event->type) 
   {
-      case CDC_ACM_HOST_ERROR:
-          ESP_LOGE(TAG, "CDC-ACM error has occurred, err_no = %d", event->data.error);
-          break;
-      case CDC_ACM_HOST_DEVICE_DISCONNECTED:
-          ESP_LOGI(TAG, "Device suddenly disconnected");
-          break;
-      case CDC_ACM_HOST_SERIAL_STATE:
-          ESP_LOGI(TAG, "serial state notif 0x%04X", event->data.serial_state.val);
-          break;
-      case CDC_ACM_HOST_NETWORK_CONNECTION:
-      default: break;
+      case CDC_ACM_HOST_ERROR: // USB 端口错误
+        ESP_LOGE(TAG, "CDC-ACM error has occurred, err_no = %d", event->data.error);
+        break;
+      case CDC_ACM_HOST_DEVICE_DISCONNECTED: // USB 设备断开
+        ESP_LOGI(TAG, "Device suddenly disconnected");
+        break;
+      case CDC_ACM_HOST_SERIAL_STATE: // 串口状态
+        ESP_LOGI(TAG, "serial state notif 0x%04X", event->data.serial_state.val);
+        break;
+      case CDC_ACM_HOST_NETWORK_CONNECTION: // 连接
+        ESP_LOGI(TAG, "CDC_ACM_HOST_NETWORK_CONNECTION.");
+        break;
+      default: 
+        break;
   }
 }
 
@@ -58,11 +66,16 @@ void usb_lib_task(void *arg)
 {
     while (1) {
         // Start handling system events
+        // 处理usb事件
         uint32_t event_flags;
         usb_host_lib_handle_events(portMAX_DELAY, &event_flags);
+        
+        // 事件：已没有USB客户端
         if (event_flags & USB_HOST_LIB_EVENT_FLAGS_NO_CLIENTS) {
-            ESP_ERROR_CHECK(usb_host_device_free_all());
+            ESP_ERROR_CHECK(usb_host_device_free_all()); // 释放掉被标记为离线的USB客户端
         }
+
+        // 事件：释放已完成
         if (event_flags & USB_HOST_LIB_EVENT_FLAGS_ALL_FREE) {
             ESP_LOGI(TAG, "USB: All devices freed");
             // Continue handling USB events to allow device reconnection
@@ -82,6 +95,7 @@ USBHostSerial::USBHostSerial()
 
 void USBHostSerial::setup()
 {
+  // 安装USB主机
   ESP_LOGI(TAG, "Installing USB Host");
   const usb_host_config_t host_config = {
       .skip_phy_setup = false,
@@ -89,10 +103,12 @@ void USBHostSerial::setup()
   };
   ESP_ERROR_CHECK(usb_host_install(&host_config));
 
-  // Create a task that will handle USB library events
+  // Create a task that will handle USB library events 
+  // 创建任务：处理USB库事件
   isRunTask = true;
-  xTaskCreate(usb_lib_task, "usb_lib", 4096, NULL, 10, NULL);
+  xTaskCreate(usb_lib_task, "usb_lib", 4096, NULL, 10, NULL); 
 
+  // 安装 USB-CDC-ACM 主机
   ESP_LOGI(TAG, "Installing CDC-ACM driver");
   ESP_ERROR_CHECK(cdc_acm_host_install(NULL));
 }
@@ -103,7 +119,7 @@ bool USBHostSerial::begin(unsigned long baud)
   //esp_log_level_set(TAG, ESP_LOG_DEBUG);
 
   //Install USB Host driver. Should only be called once in entire application
-
+  // 安装USB主机驱动，只能调用一次
   const cdc_acm_host_device_config_t dev_config = {
       .connection_timeout_ms = 10000,
       .out_buffer_size = 64,
@@ -131,10 +147,10 @@ bool USBHostSerial::begin(unsigned long baud)
 
   ESP_LOGI(TAG, "Setting up line coding");
   cdc_acm_line_coding_t line_coding = {
-      .dwDTERate = EXAMPLE_BAUDRATE,
+      .dwDTERate   = EXAMPLE_BAUDRATE,
       .bCharFormat = EXAMPLE_STOP_BITS,
       .bParityType = EXAMPLE_PARITY,
-      .bDataBits = EXAMPLE_DATA_BITS,
+      .bDataBits   = EXAMPLE_DATA_BITS,
   };
   ESP_ERROR_CHECK(vcp->line_coding_set(&line_coding));
   buffer.clear();
@@ -144,6 +160,10 @@ bool USBHostSerial::begin(unsigned long baud)
 
 void USBHostSerial::end()
 {  
+  if (vcp == nullptr) {
+    return;
+  }
+  
   vcp->close();
   delete vcp;
   vcp = nullptr;
@@ -161,10 +181,10 @@ void USBHostSerial::updateBaudRate(unsigned long baud)
   ESP_LOGI(TAG, "Setting up line coding");
 
   cdc_acm_line_coding_t line_coding = {
-      .dwDTERate = EXAMPLE_BAUDRATE,
+      .dwDTERate   = g_baudRate,
       .bCharFormat = EXAMPLE_STOP_BITS,
       .bParityType = EXAMPLE_PARITY,
-      .bDataBits = EXAMPLE_DATA_BITS,
+      .bDataBits   = EXAMPLE_DATA_BITS,
   };
   ESP_ERROR_CHECK(vcp->line_coding_set(&line_coding));
 }

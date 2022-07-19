@@ -5,6 +5,7 @@
 
 class USBHostSerial : public Stream
 {
+public:
 
 public:
     USBHostSerial();
@@ -26,6 +27,7 @@ public:
     void flush( bool txOnly);
     size_t write(uint8_t);
     size_t write(const uint8_t *buffer, size_t size);
+    
     inline size_t write(const char * buffer, size_t size)
     {
         return write((uint8_t*) buffer, size);
@@ -55,8 +57,8 @@ public:
 
     void setDebugOutput(bool);
     
-    void setRxInvert(bool);
-    void setPins(uint8_t rxPin, uint8_t txPin);
+    // void setRxInvert(bool);
+    // void setPins(uint8_t rxPin, uint8_t txPin);
     size_t setRxBufferSize(size_t new_size);
 
 private:

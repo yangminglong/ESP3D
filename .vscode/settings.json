@@ -1,9 +1,10 @@
 {
     "git.ignoreLimitWarning": true,
     "files.associations": {
-        "*.tcc": "cpp",
-
-        "fstream": "cpp"
+      "*.tcc": "cpp",
+      "fstream": "cpp",
+      "cstddef": "cpp",
+      "functional": "cpp"
     },
     "cmake.configureOnOpen": false
 }

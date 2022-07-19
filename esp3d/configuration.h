@@ -285,6 +285,14 @@
 */
 //#define ESP_SD_CS_PIN 5
 
+/*
+ESP32-S3 default SPI:
+ESP_SD_CS_PIN   34
+ESP_SD_MOSI_PIN 35
+ESP_SD_SCK_PIN  36
+ESP_SD_MISO_PIN 37
+*/
+
 /************************************
 *
 * Remote access
@@ -327,7 +335,7 @@
 /* Enable pin reset feature
 * Use a pin to reset ESP3D settings
 */
-#define PIN_RESET_FEATURE
+// #define PIN_RESET_FEATURE
 
 /* Reset pin
 * The pin used to reset ESP3D setting if set to low for more than 1 second at start
@@ -533,7 +541,7 @@
 * SETTINGS_IN_PREFERENCES //ESP32 only
 *  Location where ESP3D will save settings
 */
-#define ESP_SAVE_SETTINGS SETTINGS_IN_EEPROM
+#define ESP_SAVE_SETTINGS SETTINGS_IN_PREFERENCES
 
 /* Add serial task
 * ESP32 need to add a task to handle serial communication
@@ -557,7 +565,7 @@
 //DEBUG_OUTPUT_SERIAL2
 //DEBUG_OUTPUT_TELNET
 //DEBUG_OUTPUT_WEBSOCKET
-//#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
+#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
 
 #ifdef ESP_DEBUG_FEATURE
 #define DEBUG_BAUDRATE 115200
