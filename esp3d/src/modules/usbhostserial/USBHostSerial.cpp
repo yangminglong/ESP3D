@@ -1,4 +1,5 @@
-#include <Arduino.h>
+#include "../../include/esp3d_config.h"
+
 #include "USBHostSerial.h"
 #include "usb/usb_host.h"
 #include "CircularBuffer.h"
@@ -11,31 +12,36 @@ CircularBuffer<uint8_t, 512> buffer;
 #include "sdkconfig.h"
 #include "cp210x_usb.hpp"
 #include "ftdi_usb.hpp"
+#include "ch34x_usb.hpp"
+#include "usb/cdc_acm_host.h"
 #include "usb/usb_host.h"
 #include "esp_log.h"
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 
+CdcAcmDevice *vcp = nullptr;
+uint16_t vid = 0;
+uint16_t pid = 0;
+uint16_t interface_idx = 0;
+bool new_dev_cb_called = false;
 
 using namespace esp_usb;
 
-// Change these values to match your needs
-#define EXAMPLE_BAUDRATE     (256000)
-#define EXAMPLE_STOP_BITS    (0)      // 0: 1 stopbit, 1: 1.5 stopbits, 2: 2 stopbits
-#define EXAMPLE_PARITY       (0)      // 0: None, 1: Odd, 2: Even, 3: Mark, 4: Space
-#define EXAMPLE_DATA_BITS    (8)
+static portMUX_TYPE buf_lock = portMUX_INITIALIZER_UNLOCKED;
+#define BUFFER_ENTER_CRITICAL()   portENTER_CRITICAL(&buf_lock)
+#define BUFFER_EXIT_CRITICAL()    portEXIT_CRITICAL(&buf_lock)
 
-uint32_t g_baudRate = EXAMPLE_BAUDRATE;
-
-static const char *TAG = "USB-VCP";
 
 static void handle_rx(uint8_t *data, size_t data_len, void *arg)
 {
+  BUFFER_ENTER_CRITICAL();
   // printf("%.*s", data_len, data);
   for (int i = 0 ; i < data_len; ++i) {
     buffer.push(data[i]);
   }
+  BUFFER_EXIT_CRITICAL();
 
   // 是否需要释放 data
 }
@@ -45,16 +51,16 @@ static void handle_event(const cdc_acm_host_dev_event_data_t *event, void *user_
   switch (event->type) 
   {
       case CDC_ACM_HOST_ERROR: // USB 端口错误
-        ESP_LOGE(TAG, "CDC-ACM error has occurred, err_no = %d", event->data.error);
+        log_esp3d( "CDC-ACM error has occurred, err_no = %d", event->data.error);
         break;
       case CDC_ACM_HOST_DEVICE_DISCONNECTED: // USB 设备断开
-        ESP_LOGI(TAG, "Device suddenly disconnected");
+        log_esp3d( "Device suddenly disconnected");
         break;
       case CDC_ACM_HOST_SERIAL_STATE: // 串口状态
-        ESP_LOGI(TAG, "serial state notif 0x%04X", event->data.serial_state.val);
+        log_esp3d( "serial state notif 0x%04X", event->data.serial_state.val);
         break;
       case CDC_ACM_HOST_NETWORK_CONNECTION: // 连接
-        ESP_LOGI(TAG, "CDC_ACM_HOST_NETWORK_CONNECTION.");
+        log_esp3d( "CDC_ACM_HOST_NETWORK_CONNECTION.");
         break;
       default: 
         break;
@@ -77,7 +83,7 @@ void usb_lib_task(void *arg)
 
         // 事件：释放已完成
         if (event_flags & USB_HOST_LIB_EVENT_FLAGS_ALL_FREE) {
-            ESP_LOGI(TAG, "USB: All devices freed");
+            log_esp3d( "USB: All devices freed");
             // Continue handling USB events to allow device reconnection
             if (!isRunTask) {
               break;
@@ -86,40 +92,37 @@ void usb_lib_task(void *arg)
     }
 }
 
-CP210x *vcp = nullptr;
 
-USBHostSerial::USBHostSerial()
+static void new_dev_cb(usb_device_handle_t usb_dev)
 {
+    const usb_device_desc_t *device_desc;
+    ESP_ERROR_CHECK( usb_host_get_device_descriptor(usb_dev, &device_desc));
+    vid =  device_desc->idVendor;
+    pid =  device_desc->idProduct;
 
+    const usb_config_desc_t *config_desc;
+    ESP_ERROR_CHECK( usb_host_get_active_config_descriptor(usb_dev, &config_desc));
+    interface_idx = config_desc->bNumInterfaces;
+
+    new_dev_cb_called = true;
 }
 
-void USBHostSerial::setup()
+static void dev_gone_cb(usb_device_handle_t usb_dev)
 {
-  // 安装USB主机
-  ESP_LOGI(TAG, "Installing USB Host");
-  const usb_host_config_t host_config = {
-      .skip_phy_setup = false,
-      .intr_flags = ESP_INTR_FLAG_LEVEL1,
-  };
-  ESP_ERROR_CHECK(usb_host_install(&host_config));
-
-  // Create a task that will handle USB library events 
-  // 创建任务：处理USB库事件
-  isRunTask = true;
-  xTaskCreate(usb_lib_task, "usb_lib", 4096, NULL, 10, NULL); 
-
-  // 安装 USB-CDC-ACM 主机
-  ESP_LOGI(TAG, "Installing CDC-ACM driver");
-  ESP_ERROR_CHECK(cdc_acm_host_install(NULL));
+    if (vcp) {
+        delete vcp;
+        vcp = nullptr;
+    }
 }
 
 
-bool USBHostSerial::begin(unsigned long baud)
+bool USBHostSerial::open_VCP_device()
 {
-  //esp_log_level_set(TAG, ESP_LOG_DEBUG);
+  if (vcp) {
+    delete vcp;
+    vcp = nullptr;
+  }
 
-  //Install USB Host driver. Should only be called once in entire application
-  // 安装USB主机驱动，只能调用一次
   const cdc_acm_host_device_config_t dev_config = {
       .connection_timeout_ms = 10000,
       .out_buffer_size = 64,
@@ -127,35 +130,111 @@ bool USBHostSerial::begin(unsigned long baud)
       .data_cb = handle_rx,
       .user_arg = NULL,
   };
-
-#if defined(CONFIG_EXAMPLE_USE_FTDI)
-  FT23x *vcp;
-  // try {
-      ESP_LOGI(TAG, "Opening FT232 UART device");
-      vcp = FT23x::open_ftdi(FTDI_FT232_PID, &dev_config);
-  // }
-#else
-  try {
-      ESP_LOGI(TAG, "Opening CP210X device");
-      vcp = CP210x::open_cp210x(CP210X_PID, &dev_config);
-  }
-#endif
-  catch (esp_err_t err) {
-      ESP_LOGE(TAG, "The required device was not opened.\nExiting...");
-      ESP.restart();
+  
+  switch (vid)
+  {
+  case FTDI_VID:
+      vcp = FT23x::open_ftdi(pid, &dev_config);
+      break;
+  case SILICON_LABS_VID:
+      vcp = CP210x::open_cp210x(pid, &dev_config);
+      break;
+  case NANJING_QINHENG_MICROE_VID:
+      vcp = CH34x::open_ch34x(pid, &dev_config);
+      break;
+  default:
+      return false;
   }
 
-  ESP_LOGI(TAG, "Setting up line coding");
+
   cdc_acm_line_coding_t line_coding = {
-      .dwDTERate   = EXAMPLE_BAUDRATE,
-      .bCharFormat = EXAMPLE_STOP_BITS,
-      .bParityType = EXAMPLE_PARITY,
-      .bDataBits   = EXAMPLE_DATA_BITS,
+      .dwDTERate   = m_baudRate,
+      .bCharFormat = m_charFormat,
+      .bParityType = m_parityType,
+      .bDataBits   = m_dataBits,
   };
-  ESP_ERROR_CHECK(vcp->line_coding_set(&line_coding));
-  buffer.clear();
 
-  return true;
+  return ESP_OK == vcp->line_coding_set(&line_coding);
+
+    /*
+  ESP_ERROR_CHECK(vcp->set_control_line_state(false, true));
+  ESP_ERROR_CHECK(vcp->tx_blocking((uint8_t *)"Test string", 12));
+  */
+
+
+}
+
+USBHostSerial::USBHostSerial()
+{
+
+}
+
+bool USBHostSerial::setup()
+{
+  // 安装USB主机
+  log_esp3d( "Installing USB Host");
+
+  const usb_host_config_t host_config = {
+      .skip_phy_setup = false,
+      .intr_flags = ESP_INTR_FLAG_LEVEL1,
+  };
+
+  if (ESP_OK == usb_host_install(&host_config)) 
+  {
+    // Create a task that will handle USB library events 
+    // 创建任务：处理USB库事件
+    isRunTask = true;
+    xTaskCreate(usb_lib_task, "usb_lib", 4096, NULL, 10, NULL); 
+
+    // 安装 USB-CDC-ACM 主机
+    const cdc_acm_host_driver_config_t driver_config = {
+        .driver_task_stack_size = 4960,
+        .driver_task_priority = 10,
+        .xCoreID = 0,
+        .new_dev_cb = new_dev_cb,
+        .dev_gone_cb = dev_gone_cb,
+    };
+
+    log_esp3d("Installing CDC-ACM driver");
+    if ( ESP_OK == cdc_acm_host_install(&driver_config))
+      m_hostInstalled = true;
+  }
+
+  return m_hostInstalled;
+}
+
+
+bool USBHostSerial::begin(unsigned long baud, uint32_t config)
+{
+  if (vcp) {
+    return true;
+  }
+  BUFFER_ENTER_CRITICAL();
+  buffer.clear();
+  BUFFER_EXIT_CRITICAL();
+
+
+  // 安装USB主机驱动，只能调用一次
+  if (!m_hostInstalled) 
+    if (!setup()) {
+      return false;
+    }
+
+  m_baudRate = baud;
+  m_dataBits = config;
+
+  static unsigned long timeout = millis() + 1000;
+  while (timeout > millis())
+  {
+    if (new_dev_cb_called && open_VCP_device()) {
+      new_dev_cb_called = false;
+      return true;
+    }
+
+    delay(1);      
+  }  
+  
+  return false;
 }
 
 void USBHostSerial::end()
@@ -164,27 +243,28 @@ void USBHostSerial::end()
     return;
   }
   
-  vcp->close();
   delete vcp;
   vcp = nullptr;
-
+  BUFFER_ENTER_CRITICAL();
   buffer.clear();
+  BUFFER_EXIT_CRITICAL();
 }
 
 void USBHostSerial::updateBaudRate(unsigned long baud)
 {
+  m_baudRate = baud;
+
   if (vcp == nullptr) {
     return;
   }
 
-  g_baudRate = baud;
-  ESP_LOGI(TAG, "Setting up line coding");
+  log_esp3d("Setting up line coding");
 
   cdc_acm_line_coding_t line_coding = {
-      .dwDTERate   = g_baudRate,
-      .bCharFormat = EXAMPLE_STOP_BITS,
-      .bParityType = EXAMPLE_PARITY,
-      .bDataBits   = EXAMPLE_DATA_BITS,
+      .dwDTERate   = m_baudRate,
+      .bCharFormat = m_charFormat,
+      .bParityType = m_parityType,
+      .bDataBits   = m_dataBits,
   };
   ESP_ERROR_CHECK(vcp->line_coding_set(&line_coding));
 }
@@ -201,19 +281,26 @@ int USBHostSerial::availableForWrite(void)
 
 size_t USBHostSerial::read(uint8_t *buf, size_t size)
 {
-  size_t rdLen = buffer.size() < size ? buffer.size() : size;
+  size_t bfSize = buffer.size();
+  BUFFER_ENTER_CRITICAL();
+  size_t rdLen = bfSize < size ? bfSize : size;
   for (size_t i = 0; i < rdLen; ++i) {
     *(buf+i) = buffer.shift();
   }
+  BUFFER_EXIT_CRITICAL();
+
   return rdLen;
 }
 
 int USBHostSerial::peek(void)
 {
+  uint8_t d = 0;
   if (available()) {
-    return buffer[0];
+    BUFFER_ENTER_CRITICAL();
+    d = buffer[0];
+    BUFFER_EXIT_CRITICAL();
   }
-  return 0;
+  return d;
 }
 
 int USBHostSerial::read(void)
@@ -251,18 +338,28 @@ size_t USBHostSerial::write(const uint8_t *buffer, size_t size)
 
 uint32_t USBHostSerial::baudRate()
 {
-  return g_baudRate;
+  return m_baudRate;
 }
 
 USBHostSerial::operator bool() const
 {
-  return true;
+  return vcp != nullptr;
 }
 
 size_t USBHostSerial::setRxBufferSize(size_t new_size)
 {
-  (void)new_size;
-  return 512;
+  if (vcp) {
+      log_esp3d("RX Buffer can't be resized when Serial is already running.\n");
+      return 0;
+  }
+
+  // if (new_size <= SOC_UART_FIFO_LEN) {
+  //     log_e("RX Buffer must be higher than %d.\n", SOC_UART_FIFO_LEN);  // ESP32, S2, S3 and C3 means higher than 128
+  //     return 0;
+  // }
+
+  m_rxBufferSize = new_size;
+  return m_rxBufferSize;
 }
 
 

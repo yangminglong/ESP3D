@@ -123,7 +123,7 @@ bool SerialService::begin()
 
 #if defined(ARDUINO_ARCH_ESP32)
 #if ESP_SERIAL_OUTPUT == USE_SERIAL_USB
-    ESP3D_SERIAL.begin (br);
+    ESP3D_SERIAL.begin (br, ESP_SERIAL_PARAM);
 #else
     ESP3D_SERIAL.begin (br, ESP_SERIAL_PARAM, ESP_RX_PIN, ESP_TX_PIN);
 #endif

@@ -3,14 +3,15 @@
 
 #include <Arduino.h>
 
+class CdcAcmDevice;
+
 class USBHostSerial : public Stream
 {
 public:
 
 public:
     USBHostSerial();
-    void setup();
-    bool begin(unsigned long baud = 250000);
+    bool begin(unsigned long baud, uint32_t config=SERIAL_8N1);
     void end();
     void updateBaudRate(unsigned long baud);
     int available(void);
@@ -60,8 +61,21 @@ public:
     // void setRxInvert(bool);
     // void setPins(uint8_t rxPin, uint8_t txPin);
     size_t setRxBufferSize(size_t new_size);
-
 private:
+    bool setup();
+    bool open_VCP_device();
+private:
+    size_t m_rxBufferSize = 64;
+    uint32_t m_baudRate = 256000;
+    uint8_t m_charFormat = 0;
+    uint8_t m_parityType = 0;
+    uint8_t m_dataBits = 8;
+
+
+    bool m_hostInstalled = false;
+
+
+
 };
 
 extern USBHostSerial SerialUSB;

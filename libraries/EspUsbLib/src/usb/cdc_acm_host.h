@@ -82,6 +82,11 @@ typedef struct {
 typedef void (*cdc_acm_new_dev_callback_t)(usb_device_handle_t usb_dev);
 
 /**
+ * 设备拔出，回调函数
+ * */
+typedef void (*cdc_acm_dev_gone_callback_t)(usb_device_handle_t usb_dev);
+
+/**
  * @brief Data receive callback type
  */
 typedef void (*cdc_acm_data_callback_t)(uint8_t* data, size_t data_len, void *user_arg);
@@ -101,6 +106,7 @@ typedef struct {
     unsigned driver_task_priority;         /**< Priority of the driver's task */
     int  xCoreID;                          /**< Core affinity of the driver's task */
     cdc_acm_new_dev_callback_t new_dev_cb; /**< New USB device connected callback. Can be NULL. */
+    cdc_acm_dev_gone_callback_t dev_gone_cb; /**< dev gone callback. Can be NULL. */
 } cdc_acm_host_driver_config_t;
 
 /**
@@ -271,6 +277,9 @@ esp_err_t cdc_acm_host_send_custom_request(cdc_acm_dev_hdl_t cdc_hdl, uint8_t bm
 
 #ifdef __cplusplus
 }
+
+
+
 class CdcAcmDevice
 {
 public:
@@ -284,7 +293,7 @@ public:
         }
     }
 
-    inline esp_err_t tx_blocking(uint8_t *data, size_t len, uint32_t timeout_ms = 100)
+    inline esp_err_t tx_blocking(const uint8_t *data, size_t len, uint32_t timeout_ms = 100)
     {
         return cdc_acm_host_data_tx_blocking(this->cdc_hdl, data, len, timeout_ms);
     }
@@ -313,7 +322,7 @@ public:
         return cdc_acm_host_line_coding_get(this->cdc_hdl, line_coding);
     }
 
-    inline esp_err_t line_coding_set(cdc_acm_line_coding_t *line_coding)
+    inline virtual esp_err_t line_coding_set(cdc_acm_line_coding_t *line_coding)
     {
         return cdc_acm_host_line_coding_set(this->cdc_hdl, line_coding);
     }
