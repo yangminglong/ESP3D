@@ -50,7 +50,7 @@
 */
 #define COMMUNICATION_PROTOCOL RAW_SERIAL
 
-/* Serial port
+/* Main Serial port
 * which serial ESP use to communicate to printer (ESP32 has 3 serials available, ESP8266 only 2)
 * USE_SERIAL_0 //for ESP8266/32, also used by bootloader output, so consider to make it quiet
 * USE_SERIAL_1 //for ESP8266/32
@@ -58,6 +58,16 @@
 * USE_SERIAL_USB //for ESP32-S2/ESP32-S3 Only
 */
 #define ESP_SERIAL_OUTPUT USE_SERIAL_USB
+
+
+/* Bridge Serial port (deprecated on esp8266 as second serial is)
+* which serial ESP use to bridge to another device (ESP32 has 3 serials available, ESP8266 only 2)
+* USE_SERIAL_0 //for ESP8266/32, also used by bootloader output, so consider to make it quiet
+* USE_SERIAL_1 //for ESP8266/32
+* USE_SERIAL_2 //for ESP32 Only\
+* Comment if not used
+*/
+//#define ESP_SERIAL_BRIDGE_OUTPUT USE_SERIAL_1
 
 /* Serial buffer size
 *  Maximum size of the serial buffer
@@ -237,7 +247,6 @@
 /* SD card library
 * ESP_SD_NATIVE //esp32 / esp8266
 * ESP_SDIO      //esp32 only
-* ESP_SDFAT     //esp8266  / esp32
 * ESP_SDFAT2    //esp8266  / esp32
 */
 #define SD_DEVICE ESP_SDFAT2
