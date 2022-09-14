@@ -149,7 +149,7 @@ bool USBHostSerial::open_VCP_device()
 
   cdc_acm_line_coding_t line_coding = {
       .dwDTERate   = m_baudRate,
-      .bCharFormat = m_charFormat,
+      .bCharFormat = m_stopBit,
       .bParityType = m_parityType,
       .bDataBits   = m_dataBits,
   };
@@ -221,7 +221,10 @@ bool USBHostSerial::begin(unsigned long baud, uint32_t config)
     }
 
   m_baudRate = baud;
-  m_dataBits = config;
+  // 见 esp32-hal-uart.c #158
+  m_dataBits = (config & 0xc) >> 2;
+  m_parityType = (config & 0x3);
+  m_stopBit = (config & 0x30) >> 4;
 
   static unsigned long timeout = millis() + 1000;
   while (timeout > millis())
@@ -262,7 +265,7 @@ void USBHostSerial::updateBaudRate(unsigned long baud)
 
   cdc_acm_line_coding_t line_coding = {
       .dwDTERate   = m_baudRate,
-      .bCharFormat = m_charFormat,
+      .bCharFormat = m_stopBit,
       .bParityType = m_parityType,
       .bDataBits   = m_dataBits,
   };

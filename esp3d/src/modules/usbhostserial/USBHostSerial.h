@@ -67,7 +67,7 @@ private:
 private:
     size_t m_rxBufferSize = 64;
     uint32_t m_baudRate = 256000;
-    uint8_t m_charFormat = 0;
+    uint8_t m_stopBit = 0;
     uint8_t m_parityType = 0;
     uint8_t m_dataBits = 8;
 
