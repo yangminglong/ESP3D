@@ -21,6 +21,11 @@ CircularBuffer<uint8_t, 512> buffer;
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 
+#ifdef DISPLAY_DEVICE
+#include "../display/display.h"
+#endif //DISPLAY_DEVICE
+
+
 CdcAcmDevice *vcp = nullptr;
 uint16_t vid = 0;
 uint16_t pid = 0;
@@ -156,11 +161,14 @@ bool USBHostSerial::open_VCP_device()
 
   return ESP_OK == vcp->line_coding_set(&line_coding);
 
-    /*
+  /*
   ESP_ERROR_CHECK(vcp->set_control_line_state(false, true));
   ESP_ERROR_CHECK(vcp->tx_blocking((uint8_t *)"Test string", 12));
   */
-
+#ifdef DISPLAY_DEVICE
+  String str = "usb dev:" + String(vid, 16) + "," + String(pid, 16);
+  esp3d_display.setStatus( str.c_str() );
+#endif //DISPLAY_DEVICE
 
 }
 

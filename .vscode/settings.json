@@ -11,7 +11,8 @@
         "vector": "cpp",
         "string_view": "cpp",
         "initializer_list": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "system_error": "cpp"
     },
     "cmake.configureOnOpen": false
 }

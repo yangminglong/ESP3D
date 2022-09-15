@@ -88,7 +88,7 @@
 * SMOOTHIEWARE
 * REPETIER
 */
-#define DEFAULT_FW UNKNOWN_FW
+#define DEFAULT_FW MARLIN
 
 /************************************
 *
@@ -185,7 +185,7 @@
 /* Model name
 * Modele name of device
 */
-#define ESP_MODEL_NAME "ESP Board"
+#define ESP_MODEL_NAME "ESP 32 S3"
 
 /* Model number
 * Modele number of device
@@ -242,21 +242,21 @@
 * ESP_SHARED_SD //Printer SD Card is also connected to ESP3D
 * Does your system has SD card and how it is connected to your ESP3D
 */
-#define SD_DEVICE_CONNECTION ESP_SHARED_SD
+#define SD_DEVICE_CONNECTION ESP_DIRECT_SD
 
 /* SD card library
 * ESP_SD_NATIVE //esp32 / esp8266
 * ESP_SDIO      //esp32 only
 * ESP_SDFAT2    //esp8266  / esp32
 */
-#define SD_DEVICE ESP_SDFAT2
+#define SD_DEVICE ESP_SDIO
 
 /* Sdio bit mode
 * Mode used by SDIO library 1 bit / 4bits
 * SD_ONE_BIT_MODE
 * SD_FOUR_BIT_MODE
 */
-//#define SDIO_BIT_MODE SD_ONE_BIT_MODE
+#define SDIO_BIT_MODE SD_ONE_BIT_MODE
 
 /* Enable date/time on files
 * Set date/time on files using SNTP or last webui connection
@@ -302,6 +302,18 @@ ESP_SD_SCK_PIN  36
 ESP_SD_MISO_PIN 37
 */
 
+// SDIO card clk pin
+// The clk pin used by SD card in SDIO mode
+#define ESP_SDIO_CLK_PIN 39
+
+// SDIO card cmd pin
+// The cmd pin used by SD card in SDIO mode
+#define ESP_SDIO_CMD_PIN 38
+
+// SDIO card data 0 pin
+// The d0 pin used by SD card in SDIO mode
+#define ESP_SDIO_D0_PIN 40
+
 /************************************
 *
 * Remote access
@@ -313,7 +325,7 @@ ESP_SD_MISO_PIN 37
 /* Enable global filesystem
 * Allows to access to all filesystems from same location
 */
-//#define GLOBAL_FILESYSTEM_FEATURE
+#define GLOBAL_FILESYSTEM_FEATURE
 
 /* WebDav access
 * Use WebDav to access to your filesystem
@@ -331,7 +343,7 @@ ESP_SD_MISO_PIN 37
 * FS_FLASH       //mount Flash FS
 * FS_SD          //mount SD FS
 */
-//#define FTP_FEATURE FS_ROOT
+#define FTP_FEATURE FS_ROOT
 
 /************************************
 *
@@ -349,7 +361,7 @@ ESP_SD_MISO_PIN 37
 /* Reset pin
 * The pin used to reset ESP3D setting if set to low for more than 1 second at start
 */
-#define ESP3D_RESET_PIN 0
+// #define ESP3D_RESET_PIN 0
 
 /************************************
 *
@@ -394,7 +406,7 @@ ESP_SD_MISO_PIN 37
 * TFT_SPI_ST7789_240X240
 * TFT_SPI_ST7789_135X240
 */
-//#define DISPLAY_DEVICE OLED_I2C_SSD1306_128X64
+#define DISPLAY_DEVICE TFT_SPI_ST7789_240X240
 
 /* Flip screen
 * Flip/rotate screen
@@ -414,7 +426,22 @@ ESP_SD_MISO_PIN 37
 /* TFT led pin
 * The pin used for the backlight
 */
-//#define DISPLAY_LED_PIN -1
+#define DISPLAY_LED_PIN 48
+// TFT DC pin
+// The dc pin used for the display
+#define DISPLAY_DC_PIN 43
+
+// TFT CS pin
+// The CS pin used by display
+#define DISPLAY_CS_PIN 44
+
+// TFT MOSI pin
+// The MOSI pin used by display
+#define DISPLAY_MOSI_PIN 47
+
+// TFT SCK pin
+// The SCK pin used by display
+#define DISPLAY_SCK_PIN 21
 
 /************************************
 *
