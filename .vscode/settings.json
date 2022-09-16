@@ -12,7 +12,12 @@
         "string_view": "cpp",
         "initializer_list": "cpp",
         "typeinfo": "cpp",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "memory": "cpp",
+        "random": "cpp",
+        "regex": "cpp",
+        "cstddef": "cpp",
+        "functional": "cpp"
     },
     "cmake.configureOnOpen": false
 }

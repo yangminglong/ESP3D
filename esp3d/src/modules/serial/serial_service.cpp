@@ -134,7 +134,7 @@ bool SerialService::begin(uint8_t serialIndex)
         log_esp3d("Serial %d for %d is disabled", _serialIndex, _id);
         return true;
     }
-    if(_serialIndex >= MAX_SERIAL) {
+    if(_serialIndex >= MAX_SERIAL && serialIndex!=USE_SERIAL_USB) {
         log_esp3d("Serial %d begin for %d failed, index out of range", _serialIndex, _id);
         return false;
     }

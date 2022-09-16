@@ -25,6 +25,8 @@ CircularBuffer<uint8_t, 512> buffer;
 #include "../display/display.h"
 #endif //DISPLAY_DEVICE
 
+#include "../../core/esp3doutput.h"
+
 
 CdcAcmDevice *vcp = nullptr;
 uint16_t vid = 0;
@@ -34,19 +36,19 @@ bool new_dev_cb_called = false;
 
 using namespace esp_usb;
 
-static portMUX_TYPE buf_lock = portMUX_INITIALIZER_UNLOCKED;
-#define BUFFER_ENTER_CRITICAL()   portENTER_CRITICAL(&buf_lock)
-#define BUFFER_EXIT_CRITICAL()    portEXIT_CRITICAL(&buf_lock)
+// static portMUX_TYPE buf_lock = portMUX_INITIALIZER_UNLOCKED;
+// #define BUFFER_ENTER_CRITICAL()   portENTER_CRITICAL(&buf_lock)
+// #define BUFFER_EXIT_CRITICAL()    portEXIT_CRITICAL(&buf_lock)
 
 
 static void handle_rx(uint8_t *data, size_t data_len, void *arg)
 {
-  BUFFER_ENTER_CRITICAL();
+  // BUFFER_ENTER_CRITICAL();
   // printf("%.*s", data_len, data);
   for (int i = 0 ; i < data_len; ++i) {
     buffer.push(data[i]);
   }
-  BUFFER_EXIT_CRITICAL();
+  // BUFFER_EXIT_CRITICAL();
 
   // 是否需要释放 data
 }
@@ -136,20 +138,33 @@ bool USBHostSerial::open_VCP_device()
       .user_arg = NULL,
   };
   
-  switch (vid)
-  {
-  case FTDI_VID:
-      vcp = FT23x::open_ftdi(pid, &dev_config);
-      break;
-  case SILICON_LABS_VID:
-      vcp = CP210x::open_cp210x(pid, &dev_config);
-      break;
-  case NANJING_QINHENG_MICROE_VID:
-      vcp = CH34x::open_ch34x(pid, &dev_config);
-      break;
-  default:
-      return false;
+  try {
+    switch (vid)
+    {
+    case FTDI_VID:
+        vcp = FT23x::open_ftdi(pid, &dev_config);
+        break;
+    case SILICON_LABS_VID:
+        vcp = CP210x::open_cp210x(pid, &dev_config);
+        break;
+    case NANJING_QINHENG_MICROE_VID:
+        vcp = CH34x::open_ch34x(pid, &dev_config);
+        break;
+    default:
+        return false;
+    }
+  } catch(esp_err_t err) {
+    return false;
   }
+
+#ifdef DISPLAY_DEVICE
+  String str = "vid:" + String(vid, 16) + "pid:" + String(pid, 16);
+  ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, str.c_str() );
+  delay(1000);
+  String sc = String(m_baudRate) + "," + String(m_stopBit) + "," + String(m_parityType) + "," + String(m_dataBits);
+  ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, sc.c_str());
+  delay(1000);
+#endif //DISPLAY_DEVICE
 
 
   cdc_acm_line_coding_t line_coding = {
@@ -159,16 +174,13 @@ bool USBHostSerial::open_VCP_device()
       .bDataBits   = m_dataBits,
   };
 
-  return ESP_OK == vcp->line_coding_set(&line_coding);
+  vcp->line_coding_set(&line_coding);
 
+  return true;
   /*
   ESP_ERROR_CHECK(vcp->set_control_line_state(false, true));
   ESP_ERROR_CHECK(vcp->tx_blocking((uint8_t *)"Test string", 12));
   */
-#ifdef DISPLAY_DEVICE
-  String str = "usb dev:" + String(vid, 16) + "," + String(pid, 16);
-  esp3d_display.setStatus( str.c_str() );
-#endif //DISPLAY_DEVICE
 
 }
 
@@ -181,6 +193,9 @@ bool USBHostSerial::setup()
 {
   // 安装USB主机
   log_esp3d( "Installing USB Host");
+#ifdef DISPLAY_DEVICE
+  ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, "Installing USB Host" );
+#endif //DISPLAY_DEVICE
 
   const usb_host_config_t host_config = {
       .skip_phy_setup = false,
@@ -207,6 +222,10 @@ bool USBHostSerial::setup()
     if ( ESP_OK == cdc_acm_host_install(&driver_config))
       m_hostInstalled = true;
   }
+#ifdef DISPLAY_DEVICE
+  ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, m_hostInstalled ? "USB Installed." : "Install USB faild." );
+  delay(1000);
+#endif //DISPLAY_DEVICE
 
   return m_hostInstalled;
 }
@@ -217,9 +236,9 @@ bool USBHostSerial::begin(unsigned long baud, uint32_t config)
   if (vcp) {
     return true;
   }
-  BUFFER_ENTER_CRITICAL();
+  // BUFFER_ENTER_CRITICAL();
   buffer.clear();
-  BUFFER_EXIT_CRITICAL();
+  // BUFFER_EXIT_CRITICAL();
 
 
   // 安装USB主机驱动，只能调用一次
@@ -234,17 +253,43 @@ bool USBHostSerial::begin(unsigned long baud, uint32_t config)
   m_parityType = (config & 0x3);
   m_stopBit = (config & 0x30) >> 4;
 
+
+#ifdef DISPLAY_DEVICE
+  ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, "wait USB device." );
+  delay(1000);
+#endif //DISPLAY_DEVICE
+
+
   static unsigned long timeout = millis() + 1000;
   while (timeout > millis())
   {
-    if (new_dev_cb_called && open_VCP_device()) {
+    if (new_dev_cb_called ) {
       new_dev_cb_called = false;
-      return true;
+#ifdef DISPLAY_DEVICE
+        ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, "USB device det." );
+        delay(1000);
+#endif //DISPLAY_DEVICE
+
+      if (open_VCP_device())
+      {
+#ifdef DISPLAY_DEVICE
+        ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, "USB device opened." );
+#endif //DISPLAY_DEVICE
+        String cmd = "G28\n";
+        vcp->tx_blocking((const uint8_t *)cmd.c_str(), cmd.length());
+        return true;
+      }
+
+      break;
     }
 
     delay(1);      
-  }  
+  }
   
+#ifdef DISPLAY_DEVICE
+  ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, "failed to open USB device." );
+  delay(1000);
+#endif //DISPLAY_DEVICE
   return false;
 }
 
@@ -256,9 +301,9 @@ void USBHostSerial::end()
   
   delete vcp;
   vcp = nullptr;
-  BUFFER_ENTER_CRITICAL();
+  // BUFFER_ENTER_CRITICAL();
   buffer.clear();
-  BUFFER_EXIT_CRITICAL();
+  // BUFFER_EXIT_CRITICAL();
 }
 
 void USBHostSerial::updateBaudRate(unsigned long baud)
@@ -293,12 +338,12 @@ int USBHostSerial::availableForWrite(void)
 size_t USBHostSerial::read(uint8_t *buf, size_t size)
 {
   size_t bfSize = buffer.size();
-  BUFFER_ENTER_CRITICAL();
+  // BUFFER_ENTER_CRITICAL();
   size_t rdLen = bfSize < size ? bfSize : size;
   for (size_t i = 0; i < rdLen; ++i) {
     *(buf+i) = buffer.shift();
   }
-  BUFFER_EXIT_CRITICAL();
+  // BUFFER_EXIT_CRITICAL();
 
   return rdLen;
 }
@@ -307,9 +352,9 @@ int USBHostSerial::peek(void)
 {
   uint8_t d = 0;
   if (available()) {
-    BUFFER_ENTER_CRITICAL();
+    // BUFFER_ENTER_CRITICAL();
     d = buffer[0];
-    BUFFER_EXIT_CRITICAL();
+    // BUFFER_EXIT_CRITICAL();
   }
   return d;
 }

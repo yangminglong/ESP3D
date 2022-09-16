@@ -168,6 +168,8 @@ void Display::showScreenID(uint8_t screenID)
 void Display::setStatus(const char * status)
 {
     _status= status;
+    //update screen
+    updateScreen(true);
 }
 
 /**

@@ -96,6 +96,11 @@ bool Esp3D::begin()
 #endif //CONNECTED_DEVICES_FEATURE
     //delay to avoid to disturb printer
     bd.begin();
+#ifdef DISPLAY_DEVICE
+    esp3d_display.showScreenID(MAIN_SCREEN);
+    log_esp3d("Main screen");
+#endif //DISPLAY_DEVICE
+
 #ifdef  SD_UPDATE_FEATURE
     if (update_service.begin()) {
         log_esp3d("Need restart due to update");
@@ -103,6 +108,9 @@ bool Esp3D::begin()
         restart_now();
     }
 #endif // SD_UPDATE_FEATURE
+
+    ESP3DOutput::toScreen(ESP_OUTPUT_STATUS,  "ESP3D begin.");
+
     log_esp3d("Mode %d", WiFi.getMode());
     if (!Settings_ESP3D::begin()) {
         log_esp3d("Settings begin faild. Need reset settings");
@@ -113,6 +121,8 @@ bool Esp3D::begin()
     }
     //BT do not start automaticaly so should be OK
 #if COMMUNICATION_PROTOCOL == RAW_SERIAL || COMMUNICATION_PROTOCOL == MKS_SERIAL
+    ESP3DOutput::toScreen(ESP_OUTPUT_STATUS,  "serial service begin.");
+
     //Serial service
     if (!serial_service.begin(ESP_SERIAL_OUTPUT)) {
         log_esp3d("Error with serial service");
@@ -128,15 +138,12 @@ bool Esp3D::begin()
 #endif //ESP_SERIAL_BRIDGE_OUTPUT
     //Setup Filesystem
 #if defined(FILESYSTEM_FEATURE)
+    ESP3DOutput::toScreen(ESP_OUTPUT_STATUS,  "file system begin.");
     if (!ESP_FileSystem::begin()) {
         log_esp3d("Error with filesystem service");
         res = false;
     }
 #endif //FILESYSTEM_FEATURE
-#ifdef DISPLAY_DEVICE
-    esp3d_display.showScreenID(MAIN_SCREEN);
-    log_esp3d("Main screen");
-#endif //DISPLAY_DEVICE
     //Setup Network
 #if defined(WIFI_FEATURE) || defined(ETH_FEATURE) || defined(BLUETOOTH_FEATURE)
     if (Settings_ESP3D::read_byte(ESP_BOOT_RADIO_STATE) == 1) {

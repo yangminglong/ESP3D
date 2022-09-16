@@ -124,7 +124,7 @@
 /* Use Web server
 * Enable http server
 */
-#define HTTP_FEATURE
+#define HTTP_FEATURES
 
 /* Use telnet server
 * Enable telnet light (raw tcp) communications
