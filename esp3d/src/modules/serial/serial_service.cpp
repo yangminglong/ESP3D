@@ -33,9 +33,12 @@
 HardwareSerial * Serials[MAX_SERIAL] = {&Serial, &Serial1};
 #endif //ARDUINO_ARCH_ESP8266
 
-#if defined (ARDUINO_ARCH_ESP32)
+#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S3
 #define MAX_SERIAL 3
 HardwareSerial * Serials[MAX_SERIAL] = {&Serial, &Serial1, &Serial2};
+#elif CONFIG_IDF_TARGET_ESP32S2
+#define MAX_SERIAL 2
+HardwareSerial * Serials[MAX_SERIAL] = {&Serial, &Serial1};
 #endif //ARDUINO_ARCH_ESP32
 
 
