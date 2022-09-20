@@ -112,6 +112,8 @@ static void new_dev_cb(usb_device_handle_t usb_dev)
     interface_idx = config_desc->bNumInterfaces;
 
     new_dev_cb_called = true;
+
+    log_esp3d( "new_dev_cb_called");
 }
 
 static void dev_gone_cb(usb_device_handle_t usb_dev)
@@ -119,6 +121,7 @@ static void dev_gone_cb(usb_device_handle_t usb_dev)
     if (vcp) {
         delete vcp;
         vcp = nullptr;
+        log_esp3d( "vcp freed");
     }
 }
 
@@ -143,12 +146,15 @@ bool USBHostSerial::open_VCP_device()
     {
     case FTDI_VID:
         vcp = FT23x::open_ftdi(pid, &dev_config);
+        log_esp3d( "open_ftdi");
         break;
     case SILICON_LABS_VID:
         vcp = CP210x::open_cp210x(pid, &dev_config);
+        log_esp3d( "open_cp210x");
         break;
     case NANJING_QINHENG_MICROE_VID:
         vcp = CH34x::open_ch34x(pid, &dev_config);
+        log_esp3d( "open_ch34x");
         break;
     default:
         return false;
@@ -166,6 +172,7 @@ bool USBHostSerial::open_VCP_device()
   delay(1000);
 #endif //DISPLAY_DEVICE
 
+  log_esp3d( "open vcp succeed.");
 
   cdc_acm_line_coding_t line_coding = {
       .dwDTERate   = m_baudRate,
