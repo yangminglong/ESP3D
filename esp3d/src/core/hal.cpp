@@ -132,19 +132,8 @@ bool Hal::begin()
     pinMode (ESP_SD_DETECT_PIN, INPUT);
 #endif
 #if defined(ESP_FLAG_SHARED_SD_PIN) && ESP_FLAG_SHARED_SD_PIN != -1
-    // pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
-    // digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
-    
-    // Marlin-M22 release SD
-    ESP3DOutput output(ESP_SERIAL_CLIENT);
-    output.write("M22\n");
-
-	pinMode(ESP_SD_CS_PIN  , OUTPUT);    
-	pinMode(ESP_SD_MOSI_PIN, OUTPUT);	
-	pinMode(ESP_SD_SCK_PIN , OUTPUT);	
-	pinMode(ESP_SD_MISO_PIN, OUTPUT);	
-
-
+    pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
+    digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
 #endif //ESP_FLAG_SHARED_SD_PIN
 #endif //SD_DEVICE_CONNECTION == ESP_SHARED_SD 
     return true;

@@ -70,19 +70,8 @@ bool ESP_SD::enableSharedSD()
     //Method : TBD
     //1 - check sd cs state ? what about SDIO then ?
     //2 - check M27 status ?
-    // log_esp3d("SD shared enabled PIN %d with %d", ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
-    // digitalWrite(ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
-
-    pinMode(ESP_SD_CS_PIN  , INPUT);    
-	pinMode(ESP_SD_MOSI_PIN, INPUT);	
-	pinMode(ESP_SD_SCK_PIN , INPUT);	
-	pinMode(ESP_SD_MISO_PIN, INPUT);
-
-    // Marlin-M21 init SD
-    delay(1);
-    ESP3DOutput output(ESP_SERIAL_CLIENT);
-    output.write("M21\n");
-
+    log_esp3d("SD shared enabled PIN %d with %d", ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
+    digitalWrite(ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
 #endif // ESP_FLAG_SHARED_SD_PIN
 #if defined (ESP3DLIB_ENV)
     //check if card is not currently in use
@@ -133,7 +122,6 @@ bool  ESP_SD::accessFS(uint8_t FS)
     return true;
 #endif // SD_DEVICE_CONNECTION == ESP_SHARED_SD
 }
-
 void  ESP_SD::releaseFS(uint8_t FS)
 {
     (void)FS;
@@ -142,19 +130,8 @@ void  ESP_SD::releaseFS(uint8_t FS)
 #if SD_DEVICE_CONNECTION == ESP_SHARED_SD
     _enabled = false;
 #if defined (ESP_FLAG_SHARED_SD_PIN)  && ESP_FLAG_SHARED_SD_PIN != -1
-    // log_esp3d("SD shared disabled PIN %d with %d", ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
-    // digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
-
-    // Marlin-M22 release SD
-    ESP3DOutput output(ESP_SERIAL_CLIENT);
-    output.write("M22\n");
-    delay(1);
-
-	pinMode(ESP_SD_CS_PIN  , OUTPUT);    
-	pinMode(ESP_SD_MOSI_PIN, OUTPUT);	
-	pinMode(ESP_SD_SCK_PIN , OUTPUT);	
-	pinMode(ESP_SD_MISO_PIN, OUTPUT);	
-
+    log_esp3d("SD shared disabled PIN %d with %d", ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
+    digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
 #endif // ESP_FLAG_SHARED_SD_PIN
 #if defined (ESP3DLIB_ENV)
     log_esp3d("Mount SD in Marlin");

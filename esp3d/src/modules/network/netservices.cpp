@@ -248,6 +248,7 @@ bool NetServices::begin()
     if (!websocket_terminal_server.begin()) {
         output.printMSG("Failed start Terminal Web Socket");
     }
+#endif //HTTP_FEATURE 
 #ifdef MDNS_FEATURE
     esp3d_mDNS.addESP3DServices(HTTP_Server::port());
 #endif //MDNS_FEATURE
@@ -279,8 +280,6 @@ bool NetServices::begin()
         }
     }
 #endif //SSDP_FEATURE
-#endif //HTTP_FEATURE 
-
 #ifdef NOTIFICATION_FEATURE
     notificationsservice.begin();
     notificationsservice.sendAutoNotification(NOTIFICATION_ESP_ONLINE);
