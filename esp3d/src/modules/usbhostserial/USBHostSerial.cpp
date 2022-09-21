@@ -282,7 +282,7 @@ bool USBHostSerial::begin(unsigned long baud, uint32_t config)
 #ifdef DISPLAY_DEVICE
         ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, "USB device opened." );
 #endif //DISPLAY_DEVICE
-        String cmd = "G28\n";
+        String cmd = "G28 Y\n";
         vcp->tx_blocking((const uint8_t *)cmd.c_str(), cmd.length());
         return true;
       }

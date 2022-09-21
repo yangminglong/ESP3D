@@ -124,7 +124,7 @@
 /* Use Web server
 * Enable http server
 */
-#define HTTP_FEATURES
+#define HTTP_FEATURE
 
 /* Use telnet server
 * Enable telnet light (raw tcp) communications
@@ -296,6 +296,14 @@
 
 /*
 ESP32-S3 default SPI:
+ESP_SD_CS_PIN   10
+ESP_SD_MOSI_PIN 11
+ESP_SD_SCK_PIN  12
+ESP_SD_MISO_PIN 13
+*/
+
+/*
+ESP32-S2 default SPI:
 ESP_SD_CS_PIN   34
 ESP_SD_MOSI_PIN 35
 ESP_SD_SCK_PIN  36
@@ -500,7 +508,7 @@ ESP_SD_MISO_PIN 37
 * CAMERA_MODEL_ESP32S3_EYE
 * Camera connected to ESP board, only ones with PSRAM are supported
 */
-//#define CAMERA_DEVICE CAMERA_MODEL_AI_THINKER
+// #define CAMERA_DEVICE CAMERA_MODEL_ESP32S3_EYE
 
 /* Flip vertically
 * Flip camera vertically
