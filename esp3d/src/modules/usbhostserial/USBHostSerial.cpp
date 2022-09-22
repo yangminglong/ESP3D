@@ -274,7 +274,7 @@ bool USBHostSerial::begin(unsigned long baud, uint32_t config)
       new_dev_cb_called = false;
 #ifdef DISPLAY_DEVICE
         ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, "USB device det." );
-        delay(1000);
+        delay(100);
 #endif //DISPLAY_DEVICE
 
       if (open_VCP_device())
@@ -334,6 +334,25 @@ void USBHostSerial::updateBaudRate(unsigned long baud)
 
 int USBHostSerial::available(void)
 {
+  if (m_hostInstalled) {
+    if (new_dev_cb_called && vcp == nullptr) {
+      new_dev_cb_called = false;
+#ifdef DISPLAY_DEVICE
+        ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, "USB device det." );
+        delay(100);
+#endif //DISPLAY_DEVICE
+
+      if (open_VCP_device())
+      {
+#ifdef DISPLAY_DEVICE
+        ESP3DOutput::toScreen(ESP_OUTPUT_STATUS, "USB device opened." );
+#endif //DISPLAY_DEVICE
+        String cmd = "G28 Y\n";
+        vcp->tx_blocking((const uint8_t *)cmd.c_str(), cmd.length());
+      }
+    }    
+  }
+
   return buffer.size();
 }
 

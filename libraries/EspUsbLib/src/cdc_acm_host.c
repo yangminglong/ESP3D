@@ -1037,7 +1037,7 @@ static void usb_event_cb(const usb_host_client_event_msg_t *event_msg, void *arg
     case USB_HOST_CLIENT_EVENT_DEV_GONE: {
         ESP_LOGD(TAG, "Device suddenly disconnected");
         if (p_cdc_acm_obj->dev_gone_cb) {
-            p_cdc_acm_obj->new_dev_cb(event_msg->dev_gone.dev_hdl);
+            p_cdc_acm_obj->dev_gone_cb(event_msg->dev_gone.dev_hdl);
         }
         // Find CDC pseudo-devices associated with this USB device and close them
         cdc_dev_t *cdc_dev;

@@ -127,10 +127,22 @@ bool Hal::begin()
     WiFi.enableSTA (false);
     WiFi.enableAP (false);
     WiFi.mode (WIFI_OFF);
+
+#if defined(ESP_SD_POW_PIN)
+    pinMode(ESP_SD_POW_PIN, OUTPUT);
+    digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
+    delay(10);
+    pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
+    digitalWrite(ESP_FLAG_SHARED_SD_PIN, 1);
+
+#endif
 #if SD_DEVICE_CONNECTION == ESP_SHARED_SD
 #if defined(ESP_SD_DETECT_PIN) && ESP_SD_DETECT_PIN != -1
     pinMode (ESP_SD_DETECT_PIN, INPUT);
 #endif
+
+
+
 #if defined(ESP_FLAG_SHARED_SD_PIN) && ESP_FLAG_SHARED_SD_PIN != -1
     pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
     digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);

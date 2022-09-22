@@ -249,14 +249,14 @@
 * ESP_SDIO      //esp32 only
 * ESP_SDFAT2    //esp8266  / esp32
 */
-#define SD_DEVICE ESP_SDIO
+#define SD_DEVICE ESP_SDFAT2
 
 /* Sdio bit mode
 * Mode used by SDIO library 1 bit / 4bits
 * SD_ONE_BIT_MODE
 * SD_FOUR_BIT_MODE
 */
-#define SDIO_BIT_MODE SD_ONE_BIT_MODE
+// #define SDIO_BIT_MODE SD_ONE_BIT_MODE
 
 /* Enable date/time on files
 * Set date/time on files using SNTP or last webui connection
@@ -282,12 +282,12 @@
 /* SD shared flag pin
 * The pin used to enable SD card for ESP board
 */
-//#define ESP_FLAG_SHARED_SD_PIN -1
+#define ESP_FLAG_SHARED_SD_PIN 17
 
 /* SD shared flag pin value
 * State of SD card shared pin for ESP board
 */
-//#define ESP_FLAG_SHARED_SD_VALUE 0
+#define ESP_FLAG_SHARED_SD_VALUE 1
 
 /* SD card CS pin
 * The pin used to select SD card in SPI mode
@@ -300,6 +300,13 @@ ESP_SD_CS_PIN   10
 ESP_SD_MOSI_PIN 11
 ESP_SD_SCK_PIN  12
 ESP_SD_MISO_PIN 13
+
+ESP32-S3-my-dev SPI:
+ESP_SD_CS_PIN   45  // CS    // DATA3
+ESP_SD_MOSI_PIN 35  // CMD   // 
+ESP_SD_SCK_PIN  36  // CLk
+ESP_SD_MISO_PIN 37  // DATA0
+
 */
 
 /*
@@ -310,17 +317,24 @@ ESP_SD_SCK_PIN  36
 ESP_SD_MISO_PIN 37
 */
 
+#define ESP_SD_CS_PIN   45  // CS    // DATA3
+#define ESP_SD_MOSI_PIN 35  // CMD   // 
+#define ESP_SD_SCK_PIN  36  // CLk
+#define ESP_SD_MISO_PIN 37  // DATA0
+
+#define ESP_SD_POW_PIN 16
+#define ESP_SD_POW_VALUE 0
 // SDIO card clk pin
 // The clk pin used by SD card in SDIO mode
-#define ESP_SDIO_CLK_PIN 39
+// #define ESP_SDIO_CLK_PIN 39
 
 // SDIO card cmd pin
 // The cmd pin used by SD card in SDIO mode
-#define ESP_SDIO_CMD_PIN 38
+// #define ESP_SDIO_CMD_PIN 38
 
 // SDIO card data 0 pin
 // The d0 pin used by SD card in SDIO mode
-#define ESP_SDIO_D0_PIN 40
+// #define ESP_SDIO_D0_PIN 40
 
 /************************************
 *
@@ -405,7 +419,7 @@ ESP_SD_MISO_PIN 37
 /* Printer screen
 *  If your printer has a display
 */
-#define PRINTER_HAS_DISPLAY
+// #define PRINTER_HAS_DISPLAY
 
 /* ESP3D screen
 * Screen connected to ESP board
