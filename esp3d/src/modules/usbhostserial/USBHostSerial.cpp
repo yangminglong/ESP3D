@@ -267,7 +267,7 @@ bool USBHostSerial::begin(unsigned long baud, uint32_t config)
 #endif //DISPLAY_DEVICE
 
 
-  static unsigned long timeout = millis() + 1000;
+  static unsigned long timeout = millis() + 100;
   while (timeout > millis())
   {
     if (new_dev_cb_called ) {
