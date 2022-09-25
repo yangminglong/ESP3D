@@ -133,7 +133,7 @@ bool Hal::begin()
     digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
     delay(10);
     pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
-    digitalWrite(ESP_FLAG_SHARED_SD_PIN, 1);
+    digitalWrite(ESP_FLAG_SHARED_SD_PIN, 0);
 
 #endif
 #if SD_DEVICE_CONNECTION == ESP_SHARED_SD
