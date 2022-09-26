@@ -127,24 +127,33 @@ bool Hal::begin()
     WiFi.enableSTA (false);
     WiFi.enableAP (false);
     WiFi.mode (WIFI_OFF);
-
 #if SD_DEVICE_CONNECTION == ESP_SHARED_SD
-
 #if defined(ESP_SD_DETECT_PIN) && ESP_SD_DETECT_PIN != -1
     pinMode (ESP_SD_DETECT_PIN, INPUT);
 #endif
 #if defined(ESP_FLAG_SHARED_SD_PIN) && ESP_FLAG_SHARED_SD_PIN != -1
+  ESP3DOutput output(ESP_SERIAL_CLIENT);
+  output.write("M22\n");
+  delay(100);
+
+  pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
+  digitalWrite(ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
+#if defined(ESP_SD_POW_PIN)
+  pinMode (ESP_SD_CS_PIN  , INPUT);
+  pinMode (ESP_SD_MOSI_PIN, INPUT);
+  pinMode (ESP_SD_SCK_PIN , INPUT);
+  pinMode (ESP_SD_MISO_PIN, INPUT);
+
+  pinMode(ESP_SD_POW_PIN, OUTPUT);
+  digitalWrite(ESP_SD_POW_PIN, !ESP_SD_POW_VALUE);
+  delay(100);
+  digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
+
+  delay(10);
+#endif
     pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
     digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
-
-    pinMode (ESP_SD_CS_PIN  , INPUT);
-    pinMode (ESP_SD_MOSI_PIN, INPUT);
-    pinMode (ESP_SD_SCK_PIN , INPUT);
-    pinMode (ESP_SD_MISO_PIN, INPUT);
-#if defined(ESP_SD_POW_PIN)
-    pinMode(ESP_SD_POW_PIN, OUTPUT);
-    digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
-#endif
+    output.write("M21\n");
 #endif //ESP_FLAG_SHARED_SD_PIN
 #endif //SD_DEVICE_CONNECTION == ESP_SHARED_SD 
     return true;

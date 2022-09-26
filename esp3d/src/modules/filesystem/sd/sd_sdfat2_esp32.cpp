@@ -157,6 +157,7 @@ void ESP_SD::takeSDBus()
 
   ESP3DOutput output(ESP_SERIAL_CLIENT);
   output.write("M22\n");
+  delay(100);
 
   pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
   digitalWrite(ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
@@ -205,9 +206,6 @@ void ESP_SD::releaseSDBus()
   ESP3DOutput output(ESP_SERIAL_CLIENT);
   output.write("M21\n");
 #endif
-
-
-
 }
 
 
