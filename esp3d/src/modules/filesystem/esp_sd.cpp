@@ -66,12 +66,14 @@ bool ESP_SD::enableSharedSD()
     }
     _enabled = true;
 #if defined (ESP_FLAG_SHARED_SD_PIN)  && ESP_FLAG_SHARED_SD_PIN != -1
+    takeSDBus();
+
     //need to check if SD is in use ?
     //Method : TBD
     //1 - check sd cs state ? what about SDIO then ?
     //2 - check M27 status ?
-    log_esp3d("SD shared enabled PIN %d with %d", ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
-    digitalWrite(ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
+    // log_esp3d("SD shared enabled PIN %d with %d", ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
+    // digitalWrite(ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
 #endif // ESP_FLAG_SHARED_SD_PIN
 #if defined (ESP3DLIB_ENV)
     //check if card is not currently in use
@@ -85,6 +87,7 @@ bool ESP_SD::enableSharedSD()
 }
 #endif // SD_DEVICE_CONNECTION == ESP_SHARED_SD
 
+bool ESP_SD::_hasSDBus = false;
 bool ESP_SD::_started = false;
 uint8_t ESP_SD::_state = ESP_SDCARD_NOT_PRESENT;
 uint8_t ESP_SD::_spi_speed_divider = 1;
@@ -125,6 +128,10 @@ bool  ESP_SD::accessFS(uint8_t FS)
 void  ESP_SD::releaseFS(uint8_t FS)
 {
     (void)FS;
+
+#if SD_DEVICE_CONNECTION == ESP_SHARED_SD
+    releaseSDBus();
+#endif // SD_DEVICE_CONNECTION == ESP_SHARED_SD
     log_esp3d("Release SD");
     setState(ESP_SDCARD_IDLE);
 #if SD_DEVICE_CONNECTION == ESP_SHARED_SD

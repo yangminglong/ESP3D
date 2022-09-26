@@ -149,11 +149,76 @@ uint8_t ESP_SD::getState(bool refresh)
     return _state;
 }
 
+void ESP_SD::takeSDBus()
+{
+  if (_hasSDBus) {
+    return;
+  }
+
+  ESP3DOutput output(ESP_SERIAL_CLIENT);
+  output.write("M22\n");
+
+  pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
+  digitalWrite(ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
+
+#if defined(ESP_SD_POW_PIN)
+  pinMode (ESP_SD_CS_PIN  , INPUT);
+  pinMode (ESP_SD_MOSI_PIN, INPUT);
+  pinMode (ESP_SD_SCK_PIN , INPUT);
+  pinMode (ESP_SD_MISO_PIN, INPUT);
+
+  pinMode(ESP_SD_POW_PIN, OUTPUT);
+  digitalWrite(ESP_SD_POW_PIN, !ESP_SD_POW_VALUE);
+  delay(100);
+  digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
+#endif
+
+  SPI.begin(ESP_SD_SCK_PIN, ESP_SD_MISO_PIN, ESP_SD_MOSI_PIN, ESP_SD_CS_PIN);
+
+  _hasSDBus = true;
+}
+
+void ESP_SD::releaseSDBus()
+{
+  if (!_hasSDBus) {
+
+  }
+  _hasSDBus = false;
+
+  SPI.end();
+
+#if defined(ESP_SD_POW_PIN)
+  pinMode (ESP_SD_CS_PIN  , INPUT);
+  pinMode (ESP_SD_MOSI_PIN, INPUT);
+  pinMode (ESP_SD_SCK_PIN , INPUT);
+  pinMode (ESP_SD_MISO_PIN, INPUT);
+
+  pinMode(ESP_SD_POW_PIN, OUTPUT);
+  digitalWrite(ESP_SD_POW_PIN, !ESP_SD_POW_VALUE);
+  delay(100);
+  digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
+
+  delay(10);
+  pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
+  digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
+
+  ESP3DOutput output(ESP_SERIAL_CLIENT);
+  output.write("M21\n");
+#endif
+
+
+
+}
+
+
 bool ESP_SD::begin()
 {
+#if SD_DEVICE_CONNECTION != ESP_SHARED_SD
 #if (ESP_SD_CS_PIN != -1) || (ESP_SD_MISO_PIN != -1) || (ESP_SD_MOSI_PIN != -1) || (ESP_SD_SCK_PIN != -1)
     SPI.begin(ESP_SD_SCK_PIN, ESP_SD_MISO_PIN, ESP_SD_MOSI_PIN, ESP_SD_CS_PIN);
 #endif
+#endif // SD_DEVICE_CONNECTION == ESP_SHARED_SD
+
     _started = true;
     _state = ESP_SDCARD_NOT_PRESENT;
     _spi_speed_divider = Settings_ESP3D::read_byte(ESP_SD_SPEED_DIV);
@@ -169,12 +234,12 @@ bool ESP_SD::begin()
 #if defined(ESP_SD_DETECT_PIN) && ESP_SD_DETECT_PIN != -1
     pinMode (ESP_SD_DETECT_PIN, INPUT);
 #endif //ESP_SD_DETECT_PIN
-#if SD_DEVICE_CONNECTION  == ESP_SHARED_SD
-#if defined(ESP_FLAG_SHARED_SD_PIN) && ESP_FLAG_SHARED_SD_PIN != -1
-    pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
-    digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
-#endif //ESP_FLAG_SHARED_SD_PIN
-#endif //SD_DEVICE_CONNECTION  == ESP_SHARED_SD
+// #if SD_DEVICE_CONNECTION  == ESP_SHARED_SD
+// #if defined(ESP_FLAG_SHARED_SD_PIN) && ESP_FLAG_SHARED_SD_PIN != -1
+//     pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
+//     digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
+// #endif //ESP_FLAG_SHARED_SD_PIN
+// #endif //SD_DEVICE_CONNECTION  == ESP_SHARED_SD
     log_esp3d("sd_sdfat2_esp32 ESP_SD has begin.");
     return _started;
 }

@@ -101,8 +101,11 @@ public:
         return _enabled;
     }
 #endif // SD_DEVICE_CONNECTION == ESP_SHARED_SD
+    static void takeSDBus();
+    static void releaseSDBus();
 private:
     static bool _started;
+    static bool _hasSDBus;
 #if SD_DEVICE_CONNECTION == ESP_SHARED_SD
     static bool _enabled;
 #endif // SD_DEVICE_CONNECTION == ESP_SHARED_SD
