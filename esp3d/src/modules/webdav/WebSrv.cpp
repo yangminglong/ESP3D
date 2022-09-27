@@ -26,7 +26,7 @@
 //#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
 #include "../../include/esp3d_config.h"
 
-#if defined (WEBDAV_FEATURE) && WEBDAV_ASYNC==0
+#if defined (WEBDAV_FEATURE)
 #include "ESPWebDAV.h"
 
 // Sections are copied from ESP8266Webserver

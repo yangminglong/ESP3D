@@ -357,7 +357,6 @@ ESP_SD_MISO_PIN 37
 */
 #define WEBDAV_FEATURE FS_SD
 
-// #define WEBDAV_ASYNC 0
 
 /* FTP access
 * Use FTP to access to your filesystem (1 connection only)
@@ -428,7 +427,7 @@ ESP_SD_MISO_PIN 37
 * TFT_SPI_ST7789_240X240
 * TFT_SPI_ST7789_135X240
 */
-#define DISPLAY_DEVICE TFT_SPI_ST7789_240X240
+// #define DISPLAY_DEVICE TFT_SPI_ST7789_240X240
 
 /* Flip screen
 * Flip/rotate screen

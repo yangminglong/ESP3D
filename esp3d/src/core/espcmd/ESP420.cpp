@@ -53,11 +53,7 @@
 #include "../../modules/websocket/websocket_server.h"
 #endif //WS_DATA_FEATURE
 #ifdef WEBDAV_FEATURE
-#if WEBDAV_ASYNC
-#include "../../modules/webdavAsync/AsyncWebdav_Server.h"
-#else
 #include "../../modules/webdav/webdav_server.h"
-#endif
 #endif //WEBDAV_FEATURE
 #if defined (TIMESTAMP_FEATURE)
 #include "../../modules/time/time_server.h"

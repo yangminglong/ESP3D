@@ -82,6 +82,7 @@ bool Esp3D::begin()
     BootDelay bd;
     Hal::begin();
     DEBUG_ESP3D_INIT
+    log_esp3d("esp3d running.");
 #if COMMUNICATION_PROTOCOL == SOCKET_SERIAL
     Serial2Socket.enable();
 #endif // COMMUNICATION_PROTOCOL == SOCKET_SERIAL

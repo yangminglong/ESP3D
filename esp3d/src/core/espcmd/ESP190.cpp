@@ -23,11 +23,7 @@
 #include "../esp3doutput.h"
 #include "../settings_esp3d.h"
 #include "../../modules/authentication/authentication_service.h"
-#if WEBDAV_ASYNC
-#include "../../modules/webdavAsync/AsyncWebdav_Server.h"
-#else
 #include "../../modules/webdav/webdav_server.h"
-#endif
 
 #define COMMANDID   190
 //Set WebDav state which can be ON, OFF, CLOSE

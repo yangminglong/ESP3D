@@ -214,13 +214,14 @@ bool USBHostSerial::setup()
     // Create a task that will handle USB library events 
     // 创建任务：处理USB库事件
     isRunTask = true;
-    xTaskCreate(usb_lib_task, "usb_lib", 4096, NULL, 10, NULL); 
+    TaskHandle_t driver_task_h = NULL;
+    xTaskCreatePinnedToCore(usb_lib_task, "usb_lib", 4096, NULL, 10, &driver_task_h, m_xCoreId); 
 
     // 安装 USB-CDC-ACM 主机
     const cdc_acm_host_driver_config_t driver_config = {
         .driver_task_stack_size = 4960,
         .driver_task_priority = 10,
-        .xCoreID = 0,
+        .xCoreID = m_xCoreId,
         .new_dev_cb = new_dev_cb,
         .dev_gone_cb = dev_gone_cb,
     };

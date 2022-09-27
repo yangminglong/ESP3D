@@ -50,11 +50,7 @@
 #include "../ftp/FtpServer.h"
 #endif //FP_FEATURE
 #ifdef WEBDAV_FEATURE
-#if WEBDAV_ASYNC
-#include "../webdavAsync/webdav_server.h"
-#else
 #include "../webdav/webdav_server.h"
-#endif
 #endif //WEBDAV_FEATURE
 #ifdef HTTP_FEATURE
 #include "../http/http_server.h"

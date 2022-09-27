@@ -74,7 +74,7 @@ private:
 
     bool m_hostInstalled = false;
 
-
+    BaseType_t m_xCoreId = 1; // 0 or 1
 
 };
 
