@@ -17,7 +17,7 @@
   License along with This code; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-
+ 
 #include "../../include/esp3d_config.h"
 #if COMMUNICATION_PROTOCOL == MKS_SERIAL || COMMUNICATION_PROTOCOL == RAW_SERIAL || defined(ESP_SERIAL_BRIDGE_OUTPUT)
 #include "serial_service.h"
@@ -33,12 +33,15 @@
 HardwareSerial * Serials[MAX_SERIAL] = {&Serial, &Serial1};
 #endif //ARDUINO_ARCH_ESP8266
 
-#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S3
-#define MAX_SERIAL 3
-HardwareSerial * Serials[MAX_SERIAL] = {&Serial, &Serial1, &Serial2};
-#elif CONFIG_IDF_TARGET_ESP32S2
-#define MAX_SERIAL 2
-HardwareSerial * Serials[MAX_SERIAL] = {&Serial, &Serial1};
+
+#if defined (ARDUINO_ARCH_ESP32)
+    #if defined (CONFIG_IDF_TARGET_ESP32C3)  || defined (CONFIG_IDF_TARGET_ESP32S2)
+        #define MAX_SERIAL 2
+        HardwareSerial * Serials[MAX_SERIAL] = {&Serial, &Serial1};
+    #else
+        #define MAX_SERIAL 3
+        HardwareSerial * Serials[MAX_SERIAL] = {&Serial, &Serial1, &Serial2};
+    #endif
 #endif //ARDUINO_ARCH_ESP32
 
 
