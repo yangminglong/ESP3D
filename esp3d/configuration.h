@@ -330,6 +330,7 @@ ESP_SD_MISO_PIN 37
 #define ESP_FLAG_SHARED_SD_VALUE 1
 */
 
+/* tiny board */
 #define ESP_SD_CS_PIN   10
 #define ESP_SD_MOSI_PIN 11
 #define ESP_SD_SCK_PIN  12
