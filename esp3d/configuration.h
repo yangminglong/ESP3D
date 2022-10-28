@@ -282,12 +282,12 @@
 /* SD shared flag pin
 * The pin used to enable SD card for ESP board
 */
-#define ESP_FLAG_SHARED_SD_PIN 17
+// #define ESP_FLAG_SHARED_SD_PIN 17
 
 /* SD shared flag pin value
 * State of SD card shared pin for ESP board
 */
-#define ESP_FLAG_SHARED_SD_VALUE 1
+// #define ESP_FLAG_SHARED_SD_VALUE 1
 
 /* SD card CS pin
 * The pin used to select SD card in SPI mode
@@ -317,6 +317,8 @@ ESP_SD_SCK_PIN  36
 ESP_SD_MISO_PIN 37
 */
 
+/*  
+// bit board
 #define ESP_SD_CS_PIN   45  // CS    // DATA3
 #define ESP_SD_MOSI_PIN 35  // CMD   // 
 #define ESP_SD_SCK_PIN  36  // CLk
@@ -324,6 +326,21 @@ ESP_SD_MISO_PIN 37
 
 #define ESP_SD_POW_PIN 16
 #define ESP_SD_POW_VALUE 0
+#define ESP_FLAG_SHARED_SD_PIN 17
+#define ESP_FLAG_SHARED_SD_VALUE 1
+*/
+
+#define ESP_SD_CS_PIN   10
+#define ESP_SD_MOSI_PIN 11
+#define ESP_SD_SCK_PIN  12
+#define ESP_SD_MISO_PIN 13
+
+#define ESP_SD_POW_PIN 38
+#define ESP_SD_POW_VALUE 0
+
+#define ESP_FLAG_SHARED_SD_PIN 39
+#define ESP_FLAG_SHARED_SD_VALUE 0
+
 // SDIO card clk pin
 // The clk pin used by SD card in SDIO mode
 // #define ESP_SDIO_CLK_PIN 39
