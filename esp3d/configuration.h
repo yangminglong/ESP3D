@@ -317,8 +317,8 @@ ESP_SD_SCK_PIN  36
 ESP_SD_MISO_PIN 37
 */
 
-/*  
-// bit board
+ 
+// s3 mult dev board
 #define ESP_SD_CS_PIN   45  // CS    // DATA3
 #define ESP_SD_MOSI_PIN 35  // CMD   // 
 #define ESP_SD_SCK_PIN  36  // CLk
@@ -328,7 +328,7 @@ ESP_SD_MISO_PIN 37
 #define ESP_SD_POW_VALUE 0
 #define ESP_FLAG_SHARED_SD_PIN 17
 #define ESP_FLAG_SHARED_SD_VALUE 1
-*/
+// end s3 mult dev board
 
 /* tiny board */
 // #define ESP_SD_CS_PIN   10
@@ -345,16 +345,16 @@ ESP_SD_MISO_PIN 37
 
 
 /* esp32s3box board */
-#define ESP_SD_CS_PIN   10
-#define ESP_SD_MOSI_PIN 11
-#define ESP_SD_SCK_PIN  12
-#define ESP_SD_MISO_PIN 13
+// #define ESP_SD_CS_PIN   10
+// #define ESP_SD_MOSI_PIN 11
+// #define ESP_SD_SCK_PIN  12
+// #define ESP_SD_MISO_PIN 13
 
-#define ESP_SD_POW_PIN 44
-#define ESP_SD_POW_VALUE 0
+// #define ESP_SD_POW_PIN 44
+// #define ESP_SD_POW_VALUE 0
 
-#define ESP_FLAG_SHARED_SD_PIN 43
-#define ESP_FLAG_SHARED_SD_VALUE 0
+// #define ESP_FLAG_SHARED_SD_PIN 43
+// #define ESP_FLAG_SHARED_SD_VALUE 0
 // end tiny board
 
 // SDIO card clk pin
@@ -462,7 +462,7 @@ ESP_SD_MISO_PIN 37
 * TFT_SPI_ST7789_135X240
 * TFT_SPI_ILI9342_320X240
 */
-#define DISPLAY_DEVICE TFT_SPI_ILI9342_320X240
+// #define DISPLAY_DEVICE TFT_SPI_ILI9342_320X240
 
 /* Flip screen
 * Flip/rotate screen
