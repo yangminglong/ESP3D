@@ -416,15 +416,12 @@
 #endif //ESP_SD_CS_PIN
 //These are hardcoded on ESP8266 to 12/13/14
 //so modifications are ignored on ESP8266
-
 #ifndef ESP_SD_MISO_PIN
 #define ESP_SD_MISO_PIN         -1
 #endif //ESP_SD_MISO_PIN
-
 #ifndef ESP_SD_MOSI_PIN
 #define ESP_SD_MOSI_PIN         -1
 #endif //ESP_SD_MOSI_PIN
-
 #ifndef ESP_SD_SCK_PIN
 #define ESP_SD_SCK_PIN          -1
 #endif //ESP_SD_SCK_PIN

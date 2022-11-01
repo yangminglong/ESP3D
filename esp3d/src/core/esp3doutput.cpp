@@ -531,6 +531,7 @@ size_t ESP3DOutput::printMSG(const char * s, bool withNL)
     if (_client == ESP_SCREEN_CLIENT) {
         return print(s);
     }
+
     switch(Settings_ESP3D::GetFirmwareTarget()) {
     case GRBL:
         display = "[MSG:";
@@ -606,6 +607,7 @@ size_t ESP3DOutput::printERROR(const char * s, int code_error)
 #endif //HTTP_FEATURE
         return 0;
     }
+
     switch(Settings_ESP3D::GetFirmwareTarget()) {
     case GRBL:
         if (s[0]!='{') {
@@ -616,7 +618,7 @@ size_t ESP3DOutput::printERROR(const char * s, int code_error)
     case MARLIN_EMBEDDED:
     case MARLIN:
         if (s[0]!='{') {
-            display = "error: ";
+            display = "M117 error: ";
         }
         display += s;
         break;

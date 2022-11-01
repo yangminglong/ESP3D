@@ -88,7 +88,6 @@ bool ESP_SD::begin()
     digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
 #endif //ESP_FLAG_SHARED_SD_PIN
 #endif //SD_DEVICE_CONNECTION  == ESP_SHARED_SD
-    log_esp3d("sd_native_esp32 ESP_SD has begin.");
     return _started;
 }
 

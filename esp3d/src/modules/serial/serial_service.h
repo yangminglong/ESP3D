@@ -76,7 +76,6 @@ public:
     {
         return _started;
     }
-
 private:
     uint8_t _serialIndex;
     uint8_t _client;

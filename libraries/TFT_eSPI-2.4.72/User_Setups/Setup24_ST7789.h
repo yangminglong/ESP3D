@@ -26,10 +26,22 @@
 //#define TFT_DC    2
 //#define TFT_RST   4  // Connect reset to ensure display initialises
 
+// Generic ESP32 S3 eye setup
+#define TFT_MISO -1
+#define TFT_MOSI 47
+#define TFT_SCLK 21
+#define TFT_CS   44 // Not connected
+#define TFT_DC   43
+#define TFT_RST  -1  // Connect reset to ensure display initialises
+#define TFT_BL   48
+#define TFT_BACKLIGHT_ON 0
+//#define TFT_RGB_ORDER TFT_RGB  // Colour order Red-Green-Blue
+//#define TFT_RGB_ORDER TFT_BGR  // Colour order Blue-Green-Red
+
 // For NodeMCU - use pin numbers in the form PIN_Dx where Dx is the NodeMCU pin designation
-#define TFT_CS   -1      // Define as not used
-#define TFT_DC   PIN_D1  // Data Command control pin
-#define TFT_RST  PIN_D4  // TFT reset pin (could connect to NodeMCU RST, see next line)
+// #define TFT_CS   -1      // Define as not used
+// #define TFT_DC   PIN_D1  // Data Command control pin
+// #define TFT_RST  PIN_D4  // TFT reset pin (could connect to NodeMCU RST, see next line)
 //#define TFT_RST  -1    // TFT reset pin connect to NodeMCU RST, must also then add 10K pull down to TFT SCK
 
 

@@ -31,7 +31,6 @@
 #include "../../include/esp3d_config.h"
 
 #if defined (WEBDAV_FEATURE)
-
 #include <time.h>
 #include "ESPWebDAV.h"
 
@@ -64,7 +63,7 @@
 #endif
 #undef crc32
 #define crc32(a, len) mz_crc32( 0xffffffff,(const unsigned char *)a, len)
-#define BUFFER_SIZE 4320 //1440*3
+#define BUFFER_SIZE 1024
 #endif //ARDUINO_ARCH_ESP32
 
 
@@ -816,10 +815,6 @@ void ESPWebDAVCore::sendPropResponse(bool isDir, const String& fullResPathFS, si
     sendContent(F("</D:prop></D:propstat></D:response>"));
 }
 
-unsigned long getTimeSpan(unsigned long t1, unsigned long t2)
-{
-  return t2>t1 ? t2-t1 : t2==t1 ? 0 : std::numeric_limits<unsigned long>::max() - t2 + 1 + t1;
-}
 
 void ESPWebDAVCore::handleGet(ResourceType resource, WebDavFile& file, bool isGet)
 {
@@ -838,9 +833,9 @@ void ESPWebDAVCore::handleGet(ResourceType resource, WebDavFile& file, bool isGe
 
     // no lock on GET
 
-// #if defined(ESP_DEBUG_FEATURE)
-    unsigned long tStart = millis();
-// #endif
+#if defined(ESP_DEBUG_FEATURE)
+    long tStart = millis();
+#endif
 
     size_t fileSize = file.size();
     String contentType = contentTypeFn(uri);
@@ -906,7 +901,7 @@ void ESPWebDAVCore::handleGet(ResourceType resource, WebDavFile& file, bool isGe
             while (remaining > 0 && file.available()) {
                 size_t toRead = (size_t)remaining > sizeof(buf) ? sizeof(buf) : remaining;
                 size_t numRead = file.read((uint8_t*)buf, toRead);
-                // log_esp3d("read %d bytes from file", (int)numRead);
+                log_esp3d("read %d bytes from file", (int)numRead);
 
                 if (client->write(buf, numRead) != numRead) {
                     log_esp3d("file->net short transfer");
@@ -914,9 +909,9 @@ void ESPWebDAVCore::handleGet(ResourceType resource, WebDavFile& file, bool isGe
                 }
 
 #if defined(ESP_DEBUG_FEATURE)
-                // for (size_t i = 0; i < 80 && i < numRead; i++) {
-                //     log_esp3ds("%c", buf[i] < 32 || buf[i] > 127 ? '.' : buf[i]);
-                // }
+                for (size_t i = 0; i < 80 && i < numRead; i++) {
+                    log_esp3ds("%c", buf[i] < 32 || buf[i] > 127 ? '.' : buf[i]);
+                }
 #endif
 
                 remaining -= numRead;
@@ -926,13 +921,12 @@ void ESPWebDAVCore::handleGet(ResourceType resource, WebDavFile& file, bool isGe
                         transferStatusFn(file.name(), percent = p, false);
                     }
                 }
-                // log_esp3d("wrote %d bytes to http client", (int)numRead);
+                log_esp3d("wrote %d bytes to http client", (int)numRead);
             }
         }
     }
-    
-    unsigned long usedTime = getTimeSpan(tStart, millis())/1000;
-    log_esp3d(">>> File %d bytes sent in: %d sec. speed: %.1f KB/s", fileSize, usedTime, (fileSize/1024.0/usedTime));
+
+    log_esp3d("File %d bytes sent in: %d sec", fileSize,(millis() - tStart) / 1000);
 }
 
 
@@ -968,9 +962,9 @@ void ESPWebDAVCore::handlePut(ResourceType resource)
 
     if (contentLengthHeader != 0) {
         uint8_t buf[BUFFER_SIZE];
-// #if defined(ESP_DEBUG_FEATURE)
+#if defined(ESP_DEBUG_FEATURE)
         long tStart = millis();
-// #endif
+#endif
         size_t numRemaining = contentLengthHeader;
 
         if (transferStatusFn) {
@@ -980,25 +974,25 @@ void ESPWebDAVCore::handlePut(ResourceType resource)
 
         // read data from stream and write to the file
         while (numRemaining > 0) {
-            size_t numToRead = numRemaining > BUFFER_SIZE ? BUFFER_SIZE : numRemaining;
-            // if (numToRead > sizeof(buf)) {
-            //     numToRead = sizeof(buf);
-            // }
+            size_t numToRead = numRemaining;
+            if (numToRead > sizeof(buf)) {
+                numToRead = sizeof(buf);
+            }
             auto numRead = readBytesWithTimeout(buf, numToRead);
             if (numRead == 0) {
                 break;
             }
 
-            // size_t written = 0;
-            // while (written < numRead) {
-            //     auto numWrite = file.write(buf + written, numRead - written);
-            //     if (numWrite == 0 || (int)numWrite == -1) {
-            //         log_esp3d("error: numread=%d write=%d written=%d", (int)numRead, (int)numWrite, (int)written);
-            //         file.close();
-            //         return handleWriteError("Write data failed", file);
-            //     }
-            //     written += numWrite;
-            // }
+            size_t written = 0;
+            while (written < numRead) {
+                auto numWrite = file.write(buf + written, numRead - written);
+                if (numWrite == 0 || (int)numWrite == -1) {
+                    log_esp3d("error: numread=%d write=%d written=%d", (int)numRead, (int)numWrite, (int)written);
+                    file.close();
+                    return handleWriteError("Write data failed", file);
+                }
+                written += numWrite;
+            }
 
             // reduce the number outstanding
             numRemaining -= numRead;
@@ -1016,9 +1010,7 @@ void ESPWebDAVCore::handlePut(ResourceType resource)
             return handleWriteError("Timed out waiting for data", file);
         }
 
-        unsigned long usedTime = getTimeSpan(tStart, millis())/1000;
-        unsigned long fileSize = (contentLengthHeader - numRemaining);
-        log_esp3d(">>> File %d  bytes stored in: %d sec. speed: %.1f KB/s", fileSize, usedTime, (fileSize/1024.0/usedTime));    
+        log_esp3d("File %d  bytes stored in: %d sec",(contentLengthHeader - numRemaining), ((millis() - tStart) / 1000));
     }
     file.close();
     log_esp3d("file written ('%s': %d = %d bytes)", String(file.name()).c_str(), (int)contentLengthHeader, (int)file.size());
@@ -1518,22 +1510,21 @@ bool ESPWebDAVCore::parseRequest(const String& givenMethod,
 
 size_t ESPWebDAVCore::readBytesWithTimeout(uint8_t *buf, size_t size)
 {
-    //log_esp3d("readBytesWithTimeout: %d.", size);
     size_t where = 0;
-    int timeout_ms = HTTP_MAX_POST_WAIT;
 
-    size_t ava = client->available();
-    do {
-      if (ava<=0) {
-        vTaskDelay(1);
-      } else {
-        where += client->read(buf + where, min(ava, size-where));
-        timeout_ms = HTTP_MAX_POST_WAIT;
-      }
-      ava = client->available();
-    } while (where < size && client->connected() && timeout_ms--);
+    while (where < size) {
+        int timeout_ms = HTTP_MAX_POST_WAIT;
+        while (!client->available() && client->connected() && timeout_ms--) {
+            delay(1);
+        }
 
-    //log_esp3d("readBytesWithTimeout finished: %d.", where);
+        if (!client->available()) {
+            break;
+        }
+
+        where += client->read(buf + where, size - where);
+    }
+
     return where;
 }
 
@@ -1592,18 +1583,18 @@ bool ESPWebDAVCore::sendContent(const char* data, size_t size)
         if (client->write(chunkSize, l) != l) {
             return false;
         }
-        // log_esp3d("---- chunk %s", chunkSize);
+        log_esp3d("---- chunk %s", chunkSize);
     }
 
 #if defined(ESP_DEBUG_FEATURE)
-    // log_esp3d("---- %scontent (%d bytes):", _chunked ? "chunked " : "", (int)size);
-    // for (size_t i = 0; i < DEBUG_LEN && i < size; i++) {
-    //     log_esp3ds("%c", data[i] < 32 || data[i] > 127 ? '.' : data[i]);
-    // }
-    // if (size > DEBUG_LEN) {
-    //     log_esp3ds("...");
-    // }
-    // log_esp3ds("\n");
+    log_esp3d("---- %scontent (%d bytes):", _chunked ? "chunked " : "", (int)size);
+    for (size_t i = 0; i < DEBUG_LEN && i < size; i++) {
+        log_esp3ds("%c", data[i] < 32 || data[i] > 127 ? '.' : data[i]);
+    }
+    if (size > DEBUG_LEN) {
+        log_esp3ds("...");
+    }
+    log_esp3ds("\n");
 #endif
 
     if (client->write(data, size) != size) {

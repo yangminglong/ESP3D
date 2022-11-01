@@ -1,6 +1,7 @@
 // See SetupX_Template.h for all options available
 #define USER_SETUP_ID 42
 
+/*
 #define ILI9341_DRIVER
 
 #define TFT_MISO 19  // (leave TFT SDO disconnected if other SPI devices share MISO)
@@ -9,6 +10,24 @@
 #define TFT_CS   15  // Chip select control pin
 #define TFT_DC    2  // Data Command control pin
 #define TFT_RST   4  // Reset pin (could connect to RST pin)
+*/
+
+
+// esp32s3box
+#define ILI9342_DRIVER
+
+#define TFT_MISO -1  // (leave TFT SDO disconnected if other SPI devices share MISO)
+#define TFT_MOSI  6
+#define TFT_SCLK  7
+#define TFT_CS    5  // Chip select control pin
+#define TFT_DC    4  // Data Command control pin
+#define TFT_RST  48  // Reset pin (could connect to RST pin)
+
+#define TFT_BL   45
+#define TFT_BACKLIGHT_ON 1
+
+// end esp32s3box
+
 
 // Optional touch screen chip select
 //#define TOUCH_CS 5 // Chip select pin (T_CS) of touch screen

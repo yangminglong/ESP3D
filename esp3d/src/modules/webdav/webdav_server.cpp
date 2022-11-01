@@ -20,7 +20,7 @@
 
 #include "../../include/esp3d_config.h"
 
-#if defined (WEBDAV_FEATURE) 
+#if defined (WEBDAV_FEATURE)
 #include <WiFiServer.h>
 #include <WiFiClient.h>
 #include "webdav_server.h"
@@ -37,9 +37,9 @@ void Webdav_Server::closeClient()
     }
 }
 
-void Webdav_Server::dir()
+void Webdav_Server::dir(Print* out)
 {
-    _dav.dir("/", &Serial);
+    _dav.dir("/", out);
 };
 
 bool Webdav_Server::isConnected()

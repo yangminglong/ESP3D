@@ -112,9 +112,7 @@ uint8_t ESP_SD::getState(bool refresh)
 {
 #if defined(ESP_SD_DETECT_PIN) && ESP_SD_DETECT_PIN != -1
     //no need to go further if SD detect is not correct
-    bool isCorrect = digitalRead (ESP_SD_DETECT_PIN) == ESP_SD_DETECT_VALUE;
-    if (isCorrect) {
-        log_esp3d("SD detect is not correct.");
+    if (!((digitalRead (ESP_SD_DETECT_PIN) == ESP_SD_DETECT_VALUE) ? true : false)) {
         _state = ESP_SDCARD_NOT_PRESENT;
         return _state;
     }
@@ -159,19 +157,23 @@ void ESP_SD::takeSDBus()
   output.write("M22\n");
   delay(100);
 
+#if defined(ESP_SD_POW_PIN)
+  // set channel --- ESP
   pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
   digitalWrite(ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
+//   delay(50);
 
-#if defined(ESP_SD_POW_PIN)
   pinMode (ESP_SD_CS_PIN  , INPUT);
   pinMode (ESP_SD_MOSI_PIN, INPUT);
   pinMode (ESP_SD_SCK_PIN , INPUT);
   pinMode (ESP_SD_MISO_PIN, INPUT);
-
+  // disable SD
   pinMode(ESP_SD_POW_PIN, OUTPUT);
   digitalWrite(ESP_SD_POW_PIN, !ESP_SD_POW_VALUE);
   delay(100);
+  // reopen SD
   digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
+  delay(20);
 #endif
 
   SPI.begin(ESP_SD_SCK_PIN, ESP_SD_MISO_PIN, ESP_SD_MOSI_PIN, ESP_SD_CS_PIN);
@@ -197,11 +199,14 @@ void ESP_SD::releaseSDBus()
   pinMode(ESP_SD_POW_PIN, OUTPUT);
   digitalWrite(ESP_SD_POW_PIN, !ESP_SD_POW_VALUE);
   delay(100);
-  digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
 
-  delay(10);
+  digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
+  delay(20);
+
+  //  set channel --- printer
   pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
   digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
+  delay(50);
 
   ESP3DOutput output(ESP_SERIAL_CLIENT);
   output.write("M21\n");

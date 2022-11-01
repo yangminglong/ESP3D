@@ -17,7 +17,8 @@
         "random": "cpp",
         "regex": "cpp",
         "cstddef": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "ostream": "cpp"
     },
     "cmake.configureOnOpen": false
 }

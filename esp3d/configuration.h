@@ -256,7 +256,7 @@
 * SD_ONE_BIT_MODE
 * SD_FOUR_BIT_MODE
 */
-// #define SDIO_BIT_MODE SD_ONE_BIT_MODE
+// #define SDIO_BIT_MODE SD_FOUR_BIT_MODE
 
 /* Enable date/time on files
 * Set date/time on files using SNTP or last webui connection
@@ -331,16 +331,31 @@ ESP_SD_MISO_PIN 37
 */
 
 /* tiny board */
+// #define ESP_SD_CS_PIN   10
+// #define ESP_SD_MOSI_PIN 11
+// #define ESP_SD_SCK_PIN  12
+// #define ESP_SD_MISO_PIN 13
+
+// #define ESP_SD_POW_PIN 38
+// #define ESP_SD_POW_VALUE 0
+
+// #define ESP_FLAG_SHARED_SD_PIN 39
+// #define ESP_FLAG_SHARED_SD_VALUE 0
+// end tiny board
+
+
+/* esp32s3box board */
 #define ESP_SD_CS_PIN   10
 #define ESP_SD_MOSI_PIN 11
 #define ESP_SD_SCK_PIN  12
 #define ESP_SD_MISO_PIN 13
 
-#define ESP_SD_POW_PIN 38
+#define ESP_SD_POW_PIN 44
 #define ESP_SD_POW_VALUE 0
 
-#define ESP_FLAG_SHARED_SD_PIN 39
+#define ESP_FLAG_SHARED_SD_PIN 43
 #define ESP_FLAG_SHARED_SD_VALUE 0
+// end tiny board
 
 // SDIO card clk pin
 // The clk pin used by SD card in SDIO mode
@@ -436,7 +451,7 @@ ESP_SD_MISO_PIN 37
 /* Printer screen
 *  If your printer has a display
 */
-// #define PRINTER_HAS_DISPLAY
+#define PRINTER_HAS_DISPLAY
 
 /* ESP3D screen
 * Screen connected to ESP board
@@ -444,8 +459,10 @@ ESP_SD_MISO_PIN 37
 * OLED_I2C_SSDSH1106_132X64
 * TFT_SPI_ST7789_240X240
 * TFT_SPI_ST7789_135X240
+* TFT_SPI_ST7789_135X240
+* TFT_SPI_ILI9342_320X240
 */
-// #define DISPLAY_DEVICE TFT_SPI_ST7789_240X240
+#define DISPLAY_DEVICE TFT_SPI_ILI9342_320X240
 
 /* Flip screen
 * Flip/rotate screen
@@ -465,22 +482,22 @@ ESP_SD_MISO_PIN 37
 /* TFT led pin
 * The pin used for the backlight
 */
-#define DISPLAY_LED_PIN 48
-// TFT DC pin
-// The dc pin used for the display
-#define DISPLAY_DC_PIN 43
+// #define DISPLAY_LED_PIN 48
+// // TFT DC pin
+// // The dc pin used for the display
+// #define DISPLAY_DC_PIN 43
 
-// TFT CS pin
-// The CS pin used by display
-#define DISPLAY_CS_PIN 44
+// // TFT CS pin
+// // The CS pin used by display
+// #define DISPLAY_CS_PIN 44
 
-// TFT MOSI pin
-// The MOSI pin used by display
-#define DISPLAY_MOSI_PIN 47
+// // TFT MOSI pin
+// // The MOSI pin used by display
+// #define DISPLAY_MOSI_PIN 47
 
-// TFT SCK pin
-// The SCK pin used by display
-#define DISPLAY_SCK_PIN 21
+// // TFT SCK pin
+// // The SCK pin used by display
+// #define DISPLAY_SCK_PIN 21
 
 /************************************
 *
@@ -640,7 +657,7 @@ ESP_SD_MISO_PIN 37
 //DEBUG_OUTPUT_SERIAL2
 //DEBUG_OUTPUT_TELNET
 //DEBUG_OUTPUT_WEBSOCKET
-#define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
+// #define ESP_DEBUG_FEATURE DEBUG_OUTPUT_SERIAL0
 
 #ifdef ESP_DEBUG_FEATURE
 #define DEBUG_BAUDRATE 115200

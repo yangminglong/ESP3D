@@ -19,7 +19,7 @@
 */
 
 #include "../../../include/esp3d_config.h"
-#if defined (DISPLAY_DEVICE) && DISPLAY_DEVICE == TFT_SPI_ILI9341_320X240
+#if defined (DISPLAY_DEVICE) && DISPLAY_DEVICE == TFT_SPI_ILI9342_320X240
 
 #include "../display.h"
 #include "../../../core/settings_esp3d.h"
@@ -102,10 +102,12 @@ bool Display::begin()
     log_esp3d("Init Display");
 
     esp3d_screen.init();
+    
     clearScreen();
     setTextFont(2);
 
     esp3d_screen.setRotation(4);
+
     showScreenID(SPLASH_SCREEN);
     updateScreen(true);
 #if defined(DISPLAY_TOUCH_DRIVER)
@@ -121,8 +123,6 @@ bool Display::begin()
     if (!res) {
         end();
     }
-
-    //esp3d_screen.fillScreen(TFT_LIGHTGREY);
 
     _started = res;
     return _started;

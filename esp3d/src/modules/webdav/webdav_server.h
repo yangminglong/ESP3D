@@ -39,7 +39,7 @@ public:
     {
         return _port;
     }
-    void dir();
+    void dir(Print* out);
     void closeClient();
 private:
     bool _started;
