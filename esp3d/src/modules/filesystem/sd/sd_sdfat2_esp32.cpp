@@ -570,7 +570,7 @@ ESP_SDFile::ESP_SDFile(void* handle, bool isdir, bool iswritemode, const char * 
                 _lastwrite = 0;
             }
             _index = i;
-            //log_esp3d("Opening File at index %d",_index);
+            log_esp3d("Opening File at index %d",_index);
             set = true;
         }
     }
