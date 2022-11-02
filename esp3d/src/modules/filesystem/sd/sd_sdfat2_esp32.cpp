@@ -36,6 +36,10 @@ typedef FsFile File;
 #error Invalid SDFAT_FILE_TYPE
 #endif  // SDFAT_FILE_TYPE
 
+#ifdef ENABLE_DEDICATED_SPI
+#undef ENABLE_DEDICATED_SPI
+#endif
+
 // Try to select the best SD card configuration.
 #if HAS_SDIO_CLASS
 #define SD_CONFIG SdioConfig(FIFO_SDIO)
@@ -130,14 +134,15 @@ uint8_t ESP_SD::getState(bool refresh)
     _state = ESP_SDCARD_NOT_PRESENT;
     log_esp3d("Spi : CS: %d,  Miso: %d, Mosi: %d, SCK: %d",ESP_SD_CS_PIN!=-1?ESP_SD_CS_PIN:SS, ESP_SD_MISO_PIN!=-1?ESP_SD_MISO_PIN:MISO, ESP_SD_MOSI_PIN!=-1?ESP_SD_MOSI_PIN:MOSI, ESP_SD_SCK_PIN!=-1?ESP_SD_SCK_PIN:SCK);
     //refresh content if card was removed
-#if !(defined(ESP_SD_DETECT_PIN) && ESP_SD_DETECT_PIN != -1)
-    if (xPortGetCoreID()==0) {
-        disableCore0WDT();
-    } else {
-        disableCore1WDT();
-    }
-#endif // !(defined(ESP_SD_DETECT_PIN)
-    if (SD.begin((ESP_SD_CS_PIN == -1)?SS:ESP_SD_CS_PIN, SD_SCK_MHZ(FREQMZ/_spi_speed_divider))) {
+// #if !(defined(ESP_SD_DETECT_PIN) && ESP_SD_DETECT_PIN != -1)
+//     if (xPortGetCoreID()==0) {
+//         disableCore0WDT();
+//     } else {
+//         disableCore1WDT();
+//     }
+// #endif // !(defined(ESP_SD_DETECT_PIN)
+    unsigned long t = millis();
+    if (SD.begin(SD_CONFIG)) {
         csd_t m_csd;
         if ( SD.card()->readCSD(&m_csd) ) {
           if (sdCardCapacity(&m_csd) > 0) {
@@ -151,13 +156,16 @@ uint8_t ESP_SD::getState(bool refresh)
     } else {
       log_esp3d("SD begin faild.");
     }
-#if !(defined(ESP_SD_DETECT_PIN) && ESP_SD_DETECT_PIN != -1)
-    if (xPortGetCoreID()==0) {
-        enableCore0WDT();
-    } else {
-        enableCore1WDT();
-    }
-#endif // !(defined(ESP_SD_DETECT_PIN)
+
+    log_esp3d("SD begin finished. time used:%d ms", (millis() - t));
+
+// #if !(defined(ESP_SD_DETECT_PIN) && ESP_SD_DETECT_PIN != -1)
+//     if (xPortGetCoreID()==0) {
+//         enableCore0WDT();
+//     } else {
+//         enableCore1WDT();
+//     }
+// #endif // !(defined(ESP_SD_DETECT_PIN)
     return _state;
 }
 
@@ -175,16 +183,21 @@ void ESP_SD::takeSDBus()
   // set channel --- ESP
   pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
   digitalWrite(ESP_FLAG_SHARED_SD_PIN, ESP_FLAG_SHARED_SD_VALUE);
-//   delay(50);
+  delay(10);
 
   pinMode (ESP_SD_CS_PIN  , INPUT);
   pinMode (ESP_SD_MOSI_PIN, INPUT);
   pinMode (ESP_SD_SCK_PIN , INPUT);
   pinMode (ESP_SD_MISO_PIN, INPUT);
+  pinMode (ESP_SD_D1      , INPUT);
+  pinMode (ESP_SD_D2      , INPUT);
   // disable SD
   pinMode(ESP_SD_POW_PIN, OUTPUT);
   digitalWrite(ESP_SD_POW_PIN, !ESP_SD_POW_VALUE);
-  delay(100);
+  delay(500);
+
+  pinMode (ESP_SD_D1      , INPUT);
+  pinMode (ESP_SD_D2      , INPUT);
   // reopen SD
   digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
   delay(20);
@@ -192,39 +205,47 @@ void ESP_SD::takeSDBus()
 
   SPI.begin(ESP_SD_SCK_PIN, ESP_SD_MISO_PIN, ESP_SD_MOSI_PIN, ESP_SD_CS_PIN);
 
+  log_esp3d("take sd bus, spi has begin.");
+
   _hasSDBus = true;
 }
 
 void ESP_SD::releaseSDBus()
 {
-  if (!_hasSDBus) {
-
-  }
   _hasSDBus = false;
 
+  log_esp3d("Release SD bus begin");
+
+  delay(20);
   SPI.end();
+  
+  log_esp3d("release sd bus, spi has end.");
 
 #if defined(ESP_SD_POW_PIN)
   pinMode (ESP_SD_CS_PIN  , INPUT);
   pinMode (ESP_SD_MOSI_PIN, INPUT);
   pinMode (ESP_SD_SCK_PIN , INPUT);
   pinMode (ESP_SD_MISO_PIN, INPUT);
+  pinMode (ESP_SD_D1      , INPUT);
+  pinMode (ESP_SD_D2      , INPUT);
 
   pinMode(ESP_SD_POW_PIN, OUTPUT);
   digitalWrite(ESP_SD_POW_PIN, !ESP_SD_POW_VALUE);
-  delay(100);
-
-  digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
-  delay(20);
+  delay(500);
 
   //  set channel --- printer
   pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
   digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
-  delay(50);
+  delay(10);
+
+  digitalWrite(ESP_SD_POW_PIN, ESP_SD_POW_VALUE);
+  delay(20);
+
 
   ESP3DOutput output(ESP_SERIAL_CLIENT);
   output.write("M21\n");
 #endif
+    log_esp3d("Release SD bus finished");
 }
 
 

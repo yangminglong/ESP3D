@@ -83,6 +83,8 @@ void HTTP_Server::SDFileupload ()
 #endif // ESP3DLIB_ENV && COMMUNICATION_PROTOCOL == SOCKET_SERIAL
                     return;
                 }
+                log_esp3d("start upload file.");
+
                 ESP_SD::setState(ESP_SDCARD_BUSY );
 
                 if (upload_filename[0] != '/') {
@@ -100,6 +102,7 @@ void HTTP_Server::SDFileupload ()
                 }
                 //Sanity check
                 if (ESP_SD::exists (filename.c_str()) ) {
+                    log_esp3d("remove exists file.");
                     ESP_SD::remove (filename.c_str());
                 }
                 String path = _webserver->arg ("path");

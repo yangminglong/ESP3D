@@ -132,8 +132,8 @@ bool Hal::begin()
     pinMode (ESP_SD_DETECT_PIN, INPUT);
 #endif
 #if defined(ESP_FLAG_SHARED_SD_PIN) && ESP_FLAG_SHARED_SD_PIN != -1
-//   ESP3DOutput output(ESP_SERIAL_CLIENT);
-//   output.write("M22\n");
+  ESP3DOutput output(ESP_SERIAL_CLIENT);
+  output.write("M22\n");
   delay(100);
 
   pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
@@ -143,6 +143,8 @@ bool Hal::begin()
   pinMode (ESP_SD_MOSI_PIN, INPUT);
   pinMode (ESP_SD_SCK_PIN , INPUT);
   pinMode (ESP_SD_MISO_PIN, INPUT);
+  pinMode (ESP_SD_D1      , INPUT);
+  pinMode (ESP_SD_D2      , INPUT);
 
   pinMode(ESP_SD_POW_PIN, OUTPUT);
   digitalWrite(ESP_SD_POW_PIN, !ESP_SD_POW_VALUE);
@@ -151,9 +153,9 @@ bool Hal::begin()
 
   delay(50);
 #endif
-    pinMode (ESP_FLAG_SHARED_SD_PIN, OUTPUT);
+
     digitalWrite(ESP_FLAG_SHARED_SD_PIN, !ESP_FLAG_SHARED_SD_VALUE);
-    // output.write("M21\n");
+    output.write("M21\n");
 #endif //ESP_FLAG_SHARED_SD_PIN
 #endif //SD_DEVICE_CONNECTION == ESP_SHARED_SD 
     return true;
